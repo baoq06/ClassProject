@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 
 namespace ClassProject.DataAccess.Db
 {
-    internal class My_DB
+    public class My_DB
     {
         private string connectionString =
             ConfigurationManager.ConnectionStrings["MyDB"].ConnectionString;
