@@ -69,7 +69,7 @@ namespace ClassProject
             lblAccountLogin.TabIndex = 1;
             lblAccountLogin.Text = "Account Login";
             lblAccountLogin.TextAlign = ContentAlignment.MiddleCenter;
-            lblAccountLogin.Click += lblAccountLogin_Click;
+            //lblAccountLogin.Click += lblAccountLogin_Click;
             // 
             // lblName
             // 
@@ -152,6 +152,9 @@ namespace ClassProject
             lblRegister.Size = new Size(482, 45);
             lblRegister.TabIndex = 9;
             lblRegister.Text = "Don't have an account? Register";
+            lblRegister.Click += lblRegister_Click;
+            lblRegister.Cursor = Cursors.Hand;
+            lblRegister.ForeColor = Color.LightBlue;
             // 
             // chkRememberMe
             // 
