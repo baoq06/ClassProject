@@ -1,5 +1,9 @@
 using Microsoft.Data.SqlClient;
+<<<<<<< Updated upstream
 using ClassProject.DataAccess.Db;
+=======
+using BCrypt.Net;
+>>>>>>> Stashed changes
 
 namespace ClassProject
 {
@@ -29,15 +33,16 @@ namespace ClassProject
                 {
                     conn.Open();
 
-                    string query = "SELECT COUNT(*) FROM Users WHERE Username=@user AND Password=@pass";
+                    // Lấy password hash từ DB thay vì so sánh thẳng
+                    string query = "SELECT Password FROM Users WHERE Username = @user";
 
                     SqlCommand cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@user", username);
-                    cmd.Parameters.AddWithValue("@pass", password);
 
-                    int result = (int)cmd.ExecuteScalar();
+                    string? hashedPassword = cmd.ExecuteScalar()?.ToString();
 
-                    if (result > 0)
+                    // Kiểm tra username tồn tại và verify password
+                    if (hashedPassword != null && BCrypt.Net.BCrypt.Verify(password, hashedPassword))
                     {
                         MessageBox.Show("Đăng nhập thành công!");
 
