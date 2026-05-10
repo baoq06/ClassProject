@@ -1,12 +1,18 @@
 ﻿using ClassProject.DataAccess.Db;
 using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
 
-namespace ClassProject
+namespace ClassProject.Presentation.Forms
 {
     public partial class RegisterForm : Form
     {
         My_DB db = new My_DB();
-
         public RegisterForm()
         {
             InitializeComponent();
@@ -17,7 +23,7 @@ namespace ClassProject
             string username = txtUsername.Text.Trim();
             string email = txtEmail.Text.Trim();
             string password = txtPassword.Text.Trim();
-            string confirmPassword = txtConfirmPassword.Text.Trim();
+            string confirmPassword = txtConfirm.Text.Trim();
 
             // Check empty fields
             if (
@@ -161,9 +167,11 @@ namespace ClassProject
             }
         }
 
-        private void btnBack_Click(object sender, EventArgs e)
+        private void lblBacktoLogin_Click(object sender, EventArgs e)
         {
-            this.Close();
+            LoginForm f = new  LoginForm();
+            f.Show();
+            this.Hide();
         }
     }
 }
