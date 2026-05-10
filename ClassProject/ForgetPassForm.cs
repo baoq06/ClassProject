@@ -135,9 +135,21 @@ namespace ClassProject.Presentation.Forms
         {
             try
             {
-                // Đọc từ app.config
-                string senderEmail = System.Configuration.ConfigurationManager.AppSettings["SenderEmail"];
-                string senderPassword = System.Configuration.ConfigurationManager.AppSettings["SenderAppPassword"];
+                // Đọc từ máy tính thay vì app.config
+                string senderEmail = Environment.GetEnvironmentVariable("SENDER_EMAIL");
+                string senderPassword = Environment.GetEnvironmentVariable("SENDER_PASSWORD");
+
+                // Kiểm tra nếu chưa cài biến môi trường
+                if (string.IsNullOrEmpty(senderEmail) || string.IsNullOrEmpty(senderPassword))
+                {
+                    MessageBox.Show(
+                        "Chưa cài đặt thông tin email!\nVui lòng liên hệ admin.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                    return false;
+                }
 
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress("ClassProject", senderEmail));
