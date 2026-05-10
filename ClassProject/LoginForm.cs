@@ -6,10 +6,14 @@ namespace ClassProject
 {
     public partial class LoginForm : Form
     {
-        public LoginForm()
+        public LoginForm(string registeredUser = "")
         {
             InitializeComponent();
             this.Load += LoginForm_Load;
+            if (!string.IsNullOrEmpty(registeredUser))
+            {
+                txtUsername.Text = registeredUser;
+            }
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -78,14 +82,23 @@ namespace ClassProject
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.RememberMe)
+            if (string.IsNullOrEmpty(txtUsername.Text))
             {
-                txtUsername.Text = Properties.Settings.Default.Username;
-                txtPassword.Text = Properties.Settings.Default.Password;
-                chkRememberMe.Checked = true;
+                if (Properties.Settings.Default.RememberMe)
+                {
+                    txtUsername.Text = Properties.Settings.Default.Username;
+                    txtPassword.Text = Properties.Settings.Default.Password;
+                    chkRememberMe.Checked = true;
+                }
             }
-
-            txtUsername.Focus();
+            if (!string.IsNullOrEmpty(txtUsername.Text))
+            {
+                txtPassword.Focus();
+            }
+            else
+            {
+                txtUsername.Focus();
+            }
         }
 
         private void lblRegister_Click(object sender, EventArgs e)

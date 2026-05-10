@@ -152,7 +152,9 @@ namespace ClassProject.Presentation.Forms
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information
                     );
-
+                    string newUser = txtUsername.Text.Trim();
+                    LoginForm login = new LoginForm(newUser);
+                    login.Show();
                     this.Close();
                 }
             }
