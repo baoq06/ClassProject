@@ -1,9 +1,7 @@
 using Microsoft.Data.SqlClient;
-<<<<<<< Updated upstream
 using ClassProject.DataAccess.Db;
-=======
 using BCrypt.Net;
->>>>>>> Stashed changes
+
 
 namespace ClassProject
 {
