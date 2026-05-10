@@ -58,9 +58,15 @@ namespace ClassProject
             }
         }
 
-        private void lblAccountLogin_Click(object sender, EventArgs e)
-        {
+        //private void btnRegister_Click(object sender, EventArgs e)
+        //{
 
+        //}
+
+        private void lblRegister_Click(object sender, EventArgs e)
+        {
+            RegisterForm registerForm = new RegisterForm();
+            registerForm.ShowDialog();
         }
     }
 }
