@@ -63,18 +63,19 @@
             pnlCreateAccount.Controls.Add(txtOTP);
             pnlCreateAccount.Controls.Add(txtEmail);
             pnlCreateAccount.Controls.Add(txtConfirm);
-            pnlCreateAccount.Location = new Point(202, 14);
+            pnlCreateAccount.Location = new Point(177, 10);
+            pnlCreateAccount.Margin = new Padding(3, 2, 3, 2);
             pnlCreateAccount.Name = "pnlCreateAccount";
-            pnlCreateAccount.Size = new Size(361, 495);
+            pnlCreateAccount.Size = new Size(316, 372);
             pnlCreateAccount.TabIndex = 13;
             // 
             // lblBacktoLogin
             // 
             lblBacktoLogin.AutoSize = true;
             lblBacktoLogin.Font = new Font("Segoe UI", 9F, FontStyle.Underline);
-            lblBacktoLogin.Location = new Point(126, 454);
+            lblBacktoLogin.Location = new Point(110, 340);
             lblBacktoLogin.Name = "lblBacktoLogin";
-            lblBacktoLogin.Size = new Size(99, 20);
+            lblBacktoLogin.Size = new Size(79, 15);
             lblBacktoLogin.TabIndex = 18;
             lblBacktoLogin.Text = "Back to Login";
             lblBacktoLogin.Click += lblBacktoLogin_Click;
@@ -82,9 +83,10 @@
             // btnReset
             // 
             btnReset.BackColor = SystemColors.ActiveCaption;
-            btnReset.Location = new Point(37, 404);
+            btnReset.Location = new Point(32, 303);
+            btnReset.Margin = new Padding(3, 2, 3, 2);
             btnReset.Name = "btnReset";
-            btnReset.Size = new Size(281, 36);
+            btnReset.Size = new Size(246, 27);
             btnReset.TabIndex = 17;
             btnReset.Text = "Reset Password";
             btnReset.UseVisualStyleBackColor = false;
@@ -93,9 +95,10 @@
             // btnSendOTP
             // 
             btnSendOTP.BackColor = SystemColors.ActiveCaption;
-            btnSendOTP.Location = new Point(39, 170);
+            btnSendOTP.Location = new Point(34, 128);
+            btnSendOTP.Margin = new Padding(3, 2, 3, 2);
             btnSendOTP.Name = "btnSendOTP";
-            btnSendOTP.Size = new Size(281, 35);
+            btnSendOTP.Size = new Size(246, 26);
             btnSendOTP.TabIndex = 16;
             btnSendOTP.Text = "Send OTP";
             btnSendOTP.UseVisualStyleBackColor = false;
@@ -104,36 +107,36 @@
             // lblConfirmPassword
             // 
             lblConfirmPassword.AutoSize = true;
-            lblConfirmPassword.Location = new Point(37, 338);
+            lblConfirmPassword.Location = new Point(32, 254);
             lblConfirmPassword.Name = "lblConfirmPassword";
-            lblConfirmPassword.Size = new Size(127, 20);
+            lblConfirmPassword.Size = new Size(104, 15);
             lblConfirmPassword.TabIndex = 15;
             lblConfirmPassword.Text = "Confirm Password";
             // 
             // lblNewPassword
             // 
             lblNewPassword.AutoSize = true;
-            lblNewPassword.Location = new Point(38, 274);
+            lblNewPassword.Location = new Point(33, 206);
             lblNewPassword.Name = "lblNewPassword";
-            lblNewPassword.Size = new Size(104, 20);
+            lblNewPassword.Size = new Size(84, 15);
             lblNewPassword.TabIndex = 14;
             lblNewPassword.Text = "New Password";
             // 
             // lblEmail
             // 
             lblEmail.AutoSize = true;
-            lblEmail.Location = new Point(35, 109);
+            lblEmail.Location = new Point(31, 82);
             lblEmail.Name = "lblEmail";
-            lblEmail.Size = new Size(46, 20);
+            lblEmail.Size = new Size(36, 15);
             lblEmail.TabIndex = 13;
             lblEmail.Text = "Email";
             // 
             // lblOTP
             // 
             lblOTP.AutoSize = true;
-            lblOTP.Location = new Point(37, 209);
+            lblOTP.Location = new Point(32, 157);
             lblOTP.Name = "lblOTP";
-            lblOTP.Size = new Size(35, 20);
+            lblOTP.Size = new Size(28, 15);
             lblOTP.TabIndex = 12;
             lblOTP.Text = "OTP";
             // 
@@ -143,20 +146,21 @@
             lblResetPassword.BackColor = Color.Transparent;
             lblResetPassword.Font = new Font("Segoe UI", 19.875F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblResetPassword.ForeColor = Color.Black;
-            lblResetPassword.Location = new Point(53, 70);
+            lblResetPassword.Location = new Point(46, 52);
             lblResetPassword.Margin = new Padding(2, 0, 2, 0);
             lblResetPassword.Name = "lblResetPassword";
-            lblResetPassword.Size = new Size(265, 46);
+            lblResetPassword.Size = new Size(216, 37);
             lblResetPassword.TabIndex = 2;
             lblResetPassword.Text = "Reset Password";
             lblResetPassword.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // txtNewPassword
             // 
-            txtNewPassword.Location = new Point(39, 298);
+            txtNewPassword.Location = new Point(34, 224);
+            txtNewPassword.Margin = new Padding(3, 2, 3, 2);
             txtNewPassword.Name = "txtNewPassword";
             txtNewPassword.PlaceholderText = "New Password";
-            txtNewPassword.Size = new Size(279, 27);
+            txtNewPassword.Size = new Size(245, 23);
             txtNewPassword.TabIndex = 7;
             txtNewPassword.UseSystemPasswordChar = true;
             // 
@@ -165,47 +169,50 @@
             pictureBox1.BackColor = Color.Transparent;
             pictureBox1.BackgroundImage = (Image)resources.GetObject("pictureBox1.BackgroundImage");
             pictureBox1.BackgroundImageLayout = ImageLayout.Stretch;
-            pictureBox1.Location = new Point(147, 2);
+            pictureBox1.Location = new Point(129, 2);
             pictureBox1.Margin = new Padding(2);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(74, 66);
+            pictureBox1.Size = new Size(65, 50);
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
             // txtOTP
             // 
-            txtOTP.Location = new Point(39, 233);
+            txtOTP.Location = new Point(34, 175);
+            txtOTP.Margin = new Padding(3, 2, 3, 2);
             txtOTP.Name = "txtOTP";
             txtOTP.PlaceholderText = "Enter OTP";
-            txtOTP.Size = new Size(281, 27);
+            txtOTP.Size = new Size(246, 23);
             txtOTP.TabIndex = 5;
             // 
             // txtEmail
             // 
-            txtEmail.Location = new Point(37, 134);
+            txtEmail.Location = new Point(32, 100);
+            txtEmail.Margin = new Padding(3, 2, 3, 2);
             txtEmail.Name = "txtEmail";
             txtEmail.PlaceholderText = "Email";
-            txtEmail.Size = new Size(281, 27);
+            txtEmail.Size = new Size(246, 23);
             txtEmail.TabIndex = 6;
-            txtEmail.UseSystemPasswordChar = true;
             // 
             // txtConfirm
             // 
-            txtConfirm.Location = new Point(39, 362);
+            txtConfirm.Location = new Point(34, 272);
+            txtConfirm.Margin = new Padding(3, 2, 3, 2);
             txtConfirm.Name = "txtConfirm";
             txtConfirm.PlaceholderText = "Confirm Password";
-            txtConfirm.Size = new Size(279, 27);
+            txtConfirm.Size = new Size(245, 23);
             txtConfirm.TabIndex = 8;
             txtConfirm.UseSystemPasswordChar = true;
             // 
             // ForgetPassForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(764, 520);
+            ClientSize = new Size(668, 390);
             Controls.Add(pnlCreateAccount);
+            Margin = new Padding(3, 2, 3, 2);
             MaximizeBox = false;
             Name = "ForgetPassForm";
             StartPosition = FormStartPosition.CenterScreen;
