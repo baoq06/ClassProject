@@ -55,7 +55,6 @@ namespace ClassProject.Presentation.Forms
                 return;
             }
 
-            // Check password match
             if (password != confirmPassword)
             {
                 MessageBox.Show(
@@ -113,6 +112,7 @@ namespace ClassProject.Presentation.Forms
                                 insertCmd.Parameters.AddWithValue("@username", username);
                                 insertCmd.Parameters.AddWithValue("@email", email);
                                 insertCmd.Parameters.AddWithValue("@password", BCrypt.Net.BCrypt.HashPassword(password));
+
                                 insertCmd.ExecuteNonQuery();
                             }
 
@@ -164,7 +164,9 @@ namespace ClassProject.Presentation.Forms
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information
                     );
-
+                    string newUser = txtUsername.Text.Trim();
+                    LoginForm login = new LoginForm(newUser);
+                    login.Show();
                     this.Close();
                 }
             }
