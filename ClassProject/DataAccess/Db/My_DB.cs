@@ -1,4 +1,4 @@
-﻿    using System.Configuration;
+﻿using System.Configuration;
 using Microsoft.Data.SqlClient;
 
 namespace ClassProject.DataAccess.Db

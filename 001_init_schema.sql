@@ -1,119 +1,100 @@
-USE master;
-GO
+/* =========================================================
+   INIT / UPDATE SCHEMA (SAFE - no DROP DATABASE)
+   RoleId convention:
+   - 0 = Admin
+   - 1 = Student
+   - 2 = Giảng viên (Lecturer)
+   ========================================================= */
 
-IF DB_ID('LoginDB') IS NOT NULL
+-- Command: tạo DB nếu chưa có
+IF DB_ID(N'LoginDB') IS NULL
 BEGIN
-    ALTER DATABASE LoginDB 
-    SET SINGLE_USER 
-    WITH ROLLBACK IMMEDIATE;
-
-    DROP DATABASE LoginDB;
+    CREATE DATABASE LoginDB;
 END
 GO
 
-CREATE DATABASE LoginDB;
-GO
-
+-- Command: chuyển sang DB cần dùng
 USE LoginDB;
 GO
 
--- =========================
--- ROLES TABLE
--- =========================
-CREATE TABLE Roles
-(
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    RoleName NVARCHAR(50) NOT NULL UNIQUE
-);
+-- Command: tạo bảng Roles nếu chưa có (Id cố định 0/1/2, KHÔNG identity)
+IF OBJECT_ID(N'dbo.Roles', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Roles
+    (
+        Id INT NOT NULL PRIMARY KEY,
+        RoleName NVARCHAR(50) NOT NULL UNIQUE
+    );
+END
 GO
 
--- =========================
--- USERS TABLE
--- =========================
-CREATE TABLE Users
-(
-    Id INT PRIMARY KEY IDENTITY(1,1),
+-- Command: tạo bảng Users nếu chưa có
+IF OBJECT_ID(N'dbo.Users', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Users
+    (
+        Id INT PRIMARY KEY IDENTITY(1,1),
+        Username NVARCHAR(50) NOT NULL UNIQUE,
+        Email NVARCHAR(100) NOT NULL UNIQUE,
+        Password NVARCHAR(255) NOT NULL,
+        RoleId INT NOT NULL,
+        Created_At DATETIME DEFAULT GETDATE(),
 
-    Username NVARCHAR(50) NOT NULL UNIQUE,
-
-    Email NVARCHAR(100) NOT NULL UNIQUE,
-
-    Password NVARCHAR(255) NOT NULL,
-
-    RoleId INT NOT NULL,
-
-    Created_At DATETIME DEFAULT GETDATE(),
-
-    FOREIGN KEY (RoleId)
-    REFERENCES Roles(Id)
-);
+        CONSTRAINT FK_Users_Roles
+            FOREIGN KEY (RoleId) REFERENCES dbo.Roles(Id)
+    );
+END
 GO
 
--- =========================
--- INSERT ROLES
--- =========================
-INSERT INTO Roles (RoleName)
-VALUES
-('Admin'),
-('User');
+-- Command: tạo bảng Students nếu chưa có (FK email -> Users.Email)
+IF OBJECT_ID(N'dbo.Students', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Students
+    (
+        Id INT PRIMARY KEY IDENTITY(1,1),
+        Email NVARCHAR(100) NOT NULL UNIQUE,      -- 1 user = 1 student profile
+        MSSV NVARCHAR(30) NOT NULL UNIQUE,
+        FirstName NVARCHAR(100) NOT NULL,
+        LastName NVARCHAR(100) NOT NULL,
+        DateOfBirth DATETIME NULL,
+        Gender NVARCHAR(10) NULL,
+        Phone NVARCHAR(15) NULL,
+        Address NVARCHAR(200) NULL,
+        Hometown NVARCHAR(100) NULL,
+        Created_At DATETIME DEFAULT GETDATE(),
+
+        CONSTRAINT FK_Students_Users_Email
+            FOREIGN KEY (Email) REFERENCES dbo.Users(Email)
+    );
+END
 GO
 
--- =========================
--- INSERT USERS
--- =========================
-INSERT INTO Users
-(
-    Username,
-    Email,
-    Password,
-    RoleId
-)
-VALUES
-(
-    'admin',
-    'admin@gmail.com',
-    '1234',
-    1
-),
-(
-    'user1',
-    'user1@gmail.com',
-    '123',
-    2
-),
-(
-    'user2',
-    'user2@gmail.com',
-    '123',
-    2
-);
+/* Command: seed Roles theo Id cố định
+   - MERGE để chạy lại nhiều lần không bị insert trùng, không xóa dữ liệu cũ
+*/
+MERGE dbo.Roles AS target
+USING (VALUES
+    (0, N'Admin'),
+    (1, N'Student'),
+    (2, N'Giảng viên')
+) AS src(Id, RoleName)
+ON target.Id = src.Id
+WHEN NOT MATCHED THEN
+    INSERT (Id, RoleName) VALUES (src.Id, src.RoleName);
 GO
 
--- =========================
--- TEST
--- =========================
-SELECT * FROM Roles;
-SELECT * FROM Users;
+/* Command: seed admin (tùy chọn)
+   - IF NOT EXISTS: chỉ thêm nếu chưa có, không overwrite password hay xóa user khác
+*/
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Username = N'admin' OR Email = N'admin@gmail.com')
+BEGIN
+    INSERT INTO dbo.Users (Username, Email, Password, RoleId)
+    VALUES (N'admin', N'admin@gmail.com', N'1234', 0);
+END
 GO
 
-SELECT @@SERVERNAME AS ServerName, DB_NAME() AS CurrentDb;
-USE LoginDB;
-SELECT * FROM dbo.Users;
-
-SELECT
-    s.name AS SchemaName,
-    o.name AS ObjectName,
-    o.type_desc
-FROM sys.objects o
-JOIN sys.schemas s ON s.schema_id = o.schema_id
-WHERE o.name = N'Users';
-
-SELECT base_object_name
-FROM sys.synonyms
-WHERE name = N'Users';
-
-SELECT COUNT(*) AS TotalRows FROM dbo.Users;
-SELECT * FROM dbo.Users;
-
-SELECT name, is_enabled
-FROM sys.security_policies;
+-- Command: kiểm tra nhanh dữ liệu
+SELECT * FROM dbo.Roles ORDER BY Id;
+SELECT TOP 50 * FROM dbo.Users ORDER BY Id DESC;
+SELECT TOP 50 * FROM dbo.Students ORDER BY Id DESC;
+GO
