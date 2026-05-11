@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using Microsoft.Data.SqlClient;
+using S.Data.SqlClient;
 using MimeKit;
 using MailKit.Net.Smtp;
 using BCrypt.Net;
