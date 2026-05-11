@@ -89,8 +89,13 @@ GO
 IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Username = N'admin' OR Email = N'admin@gmail.com')
 BEGIN
     INSERT INTO dbo.Users (Username, Email, Password, RoleId)
-    VALUES (N'admin', N'admin@gmail.com', N'1234', 0);
+    VALUES (N'admin', N'admin@gmail.com', N'$2a$12$cWrDKpQg5HtG7nixf4Wu1OTveL5mWu8h5.1tIrA43Ssc4JCPWX8GS', 0);
 END
+GO
+
+UPDATE dbo.Users
+SET Password = N'$2a$12$cWrDKpQg5HtG7nixf4Wu1OTveL5mWu8h5.1tIrA43Ssc4JCPWX8GS'
+WHERE Username = N'admin';
 GO
 
 -- Command: kiểm tra nhanh dữ liệu
