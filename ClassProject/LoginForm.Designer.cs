@@ -31,7 +31,7 @@ namespace ClassProject
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
-            pctBoxLogo = new PictureBox();
+            picLogo = new PictureBox();
             lblAccountLogin = new Label();
             lblName = new Label();
             lblPassword = new Label();
@@ -41,21 +41,21 @@ namespace ClassProject
             lblForgetPassword = new Label();
             lblRegister = new Label();
             chkRememberMe = new CheckBox();
-            ((System.ComponentModel.ISupportInitialize)pctBoxLogo).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picLogo).BeginInit();
             SuspendLayout();
             // 
             // pctBoxLogo
             // 
-            pctBoxLogo.BackgroundImageLayout = ImageLayout.Center;
-            pctBoxLogo.BorderStyle = BorderStyle.FixedSingle;
-            pctBoxLogo.Image = Properties.Resources.Login_ico;
-            pctBoxLogo.Location = new Point(0, 0);
-            pctBoxLogo.Margin = new Padding(3, 2, 3, 2);
-            pctBoxLogo.Name = "pctBoxLogo";
-            pctBoxLogo.Size = new Size(95, 82);
-            pctBoxLogo.SizeMode = PictureBoxSizeMode.Zoom;
-            pctBoxLogo.TabIndex = 13;
-            pctBoxLogo.TabStop = false;
+            picLogo.BackgroundImageLayout = ImageLayout.Center;
+            picLogo.BorderStyle = BorderStyle.FixedSingle;
+            picLogo.Image = Properties.Resources.Login_ico;
+            picLogo.Location = new Point(0, 0);
+            picLogo.Margin = new Padding(3, 2, 3, 2);
+            picLogo.Name = "pctBoxLogo";
+            picLogo.Size = new Size(95, 82);
+            picLogo.SizeMode = PictureBoxSizeMode.Zoom;
+            picLogo.TabIndex = 13;
+            picLogo.TabStop = false;
             // 
             // lblAccountLogin
             // 
@@ -183,20 +183,20 @@ namespace ClassProject
             Controls.Add(lblPassword);
             Controls.Add(lblName);
             Controls.Add(lblAccountLogin);
-            Controls.Add(pctBoxLogo);
+            Controls.Add(picLogo);
             Margin = new Padding(2);
             MaximizeBox = false;
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Login";
-            ((System.ComponentModel.ISupportInitialize)pctBoxLogo).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picLogo).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private PictureBox pctBoxLogo;
+        private PictureBox picLogo;
         private Label lblAccountLogin;
         private Label lblName;
         private Label lblPassword;
