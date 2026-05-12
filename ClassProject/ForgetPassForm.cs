@@ -61,7 +61,7 @@ namespace ClassProject.Presentation.Forms
             string confirmPassword = txtConfirm.Text.Trim();
 
             if (inputOTP != _otp || _otp == "")
-            {
+            {   
                 MessageBox.Show("OTP không đúng!", "Warning",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
