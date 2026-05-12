@@ -97,33 +97,39 @@ namespace ClassProject
                 {
                     conn.Open();
 
-                    Student sv = new Student(
-                        //currentUserId, // UserId
-                        int.Parse(txtMSSV.Text),
-                        txtFirstName.Text,
-                        txtLastName.Text,
-                        dtpDateOfBirth.Value,
-                        cboGender.Text,
-                        txtPhone.Text,
-                        txtAddress.Text,
-                        txtHometown.Text,
-                        txtEmail.Text,
-                        studentImage
-                    );
-                    if (sv.IsMssvExist(int.Parse(txtMSSV.Text), conn.ConnectionString))
+                    if (IsMssvExistsInAnyTable(int.Parse(txtMSSV.Text), conn))
                     {
-                        MessageBox.Show("Mã số sinh viên này đã tồn tại!");
+                        MessageBox.Show("Mã số sinh viên này đã tồn tại (Students hoặc Pending)!");
                         return;
                     }
-                    if (sv.AddStudent(conn.ConnectionString))
+
+                    EnsurePendingStudentsTable(conn);
+
+                    const string insertPending = @"
+INSERT INTO dbo.PendingStudents
+(UserId, Mssv, FirstName, LastName, DateOfBirth, Gender, Phone, Address, Hometown, Email, Picture)
+VALUES
+(@UserId, @Mssv, @FirstName, @LastName, @DateOfBirth, @Gender, @Phone, @Address, @Hometown, @Email, @Picture);";
+
+                    using (SqlCommand cmd = new SqlCommand(insertPending, conn))
                     {
-                        MessageBox.Show("Thêm sinh viên thành công");
-                        btnClear.PerformClick();
+                        cmd.Parameters.AddWithValue("@UserId", currentUserId);
+                        cmd.Parameters.AddWithValue("@Mssv", int.Parse(txtMSSV.Text));
+                        cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text);
+                        cmd.Parameters.AddWithValue("@LastName", txtLastName.Text);
+                        cmd.Parameters.AddWithValue("@DateOfBirth", dtpDateOfBirth.Value);
+                        cmd.Parameters.AddWithValue("@Gender", cboGender.Text);
+                        cmd.Parameters.AddWithValue("@Phone", txtPhone.Text);
+                        cmd.Parameters.AddWithValue("@Address", string.IsNullOrWhiteSpace(txtAddress.Text) ? (object)DBNull.Value : txtAddress.Text);
+                        cmd.Parameters.AddWithValue("@Hometown", string.IsNullOrWhiteSpace(txtHometown.Text) ? (object)DBNull.Value : txtHometown.Text);
+                        cmd.Parameters.AddWithValue("@Email", txtEmail.Text);
+                        cmd.Parameters.AddWithValue("@Picture", studentImage ?? (object)DBNull.Value);
+
+                        cmd.ExecuteNonQuery();
                     }
-                    else
-                    {
-                        MessageBox.Show("Thêm thất bại");
-                    }
+
+                    MessageBox.Show("Đã gửi thông tin. Vui lòng chờ Admin duyệt.");
+                    btnClear.PerformClick();
                 }
                 catch (Exception ex)
                 {
@@ -161,6 +167,52 @@ namespace ClassProject
         bool IsValidPhone(string phone)
         {
             return Regex.IsMatch(phone, @"^[0-9]{10}$");
+        }
+
+        private static bool IsMssvExistsInAnyTable(int mssv, SqlConnection conn)
+        {
+            const string sql = @"
+SELECT
+    (SELECT COUNT(*) FROM dbo.Students WHERE MSSV = @mssv) +
+    (SELECT COUNT(*) FROM dbo.PendingStudents WHERE Mssv = @mssv);";
+
+            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@mssv", mssv);
+                int count = Convert.ToInt32(cmd.ExecuteScalar());
+                return count > 0;
+            }
+        }
+
+        private static void EnsurePendingStudentsTable(SqlConnection conn)
+        {
+            const string sql = @"
+IF OBJECT_ID('dbo.PendingStudents', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.PendingStudents (
+        Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        UserId INT NOT NULL,
+        Mssv INT NOT NULL,
+        FirstName NVARCHAR(50) NOT NULL,
+        LastName NVARCHAR(50) NOT NULL,
+        DateOfBirth DATETIME NOT NULL,
+        Gender NVARCHAR(10) NOT NULL,
+        Phone NVARCHAR(20) NOT NULL,
+        Address NVARCHAR(255) NULL,
+        Hometown NVARCHAR(255) NULL,
+        Email NVARCHAR(255) NOT NULL,
+        Picture VARBINARY(MAX) NULL,
+        SubmittedAt DATETIME NOT NULL CONSTRAINT DF_PendingStudents_SubmittedAt DEFAULT(GETDATE())
+    );
+
+    CREATE UNIQUE INDEX UX_PendingStudents_UserId ON dbo.PendingStudents(UserId);
+    CREATE UNIQUE INDEX UX_PendingStudents_Mssv ON dbo.PendingStudents(Mssv);
+END";
+
+            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }
