@@ -5,7 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using ClassProject.DataAccess.Db;
+using ClassProject._db;
 using Microsoft.Data.SqlClient;
 
 namespace ClassProject

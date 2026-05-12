@@ -4,7 +4,7 @@ using Microsoft.Data.SqlClient;
 using MimeKit;
 using MailKit.Net.Smtp;
 using BCrypt.Net;
-using ClassProject.DataAccess.Db;
+using ClassProject._db;
 
 namespace ClassProject.Presentation.Forms
 {

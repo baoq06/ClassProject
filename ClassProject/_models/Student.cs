@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ClassProject
+namespace ClassProject.Models.Models
 {
     public class Student
     {

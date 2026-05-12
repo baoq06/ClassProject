@@ -1,4 +1,4 @@
-using ClassProject.DataAccess.Db;
+using ClassProject._db;
 using BCrypt.Net;
 using ClassProject.Presentation.Forms;
 using Microsoft.Data.SqlClient;

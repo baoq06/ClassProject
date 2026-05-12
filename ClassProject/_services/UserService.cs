@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 //using ClassProject.DataAccess.Repositories;
 
-namespace ClassProject.Business.Services
+namespace ClassProject.Utils
 {
-    internal class UserService
+    public static class UserService
     {
         //private UserRepository repo = new UserRepository();
 
