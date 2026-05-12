@@ -161,7 +161,9 @@ namespace ClassProject
             // picEye
             // 
             picEye.Cursor = Cursors.Hand;
-            picEye.Image = Image.FromFile(@"C:\ClassProject\ClassProject\images\hide.png");
+            string projectDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
+            string eyePath = Path.Combine(projectDir, "images", "hide.png");
+            picEye.Image = Image.FromFile(eyePath);
             picEye.Location = new Point(831, 433);
             picEye.Name = "picEye";
             picEye.Size = new Size(40, 40);

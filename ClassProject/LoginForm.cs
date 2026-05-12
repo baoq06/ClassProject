@@ -148,12 +148,16 @@ namespace ClassProject
             {
                 txtPassword.UseSystemPasswordChar = false;
                 // Icon mắt mở - dùng text thay icon tạm
-                picEye.Image = Image.FromFile(@"C:\ClassProject\ClassProject\images\eye.png");
+                string projectDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
+                string eyePath = Path.Combine(projectDir, "images", "hide.png");
+                picEye.Image = Image.FromFile(eyePath);
             }
             else
             {
                 txtPassword.UseSystemPasswordChar = true;
-                picEye.Image = Image.FromFile(@"C:\ClassProject\ClassProject\images\hide.png");
+                string projectDir = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
+                string eyePath = Path.Combine(projectDir, "images", "hide.png");
+                picEye.Image = Image.FromFile(eyePath);
             }
         }
     }
