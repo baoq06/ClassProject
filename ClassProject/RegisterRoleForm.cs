@@ -21,12 +21,18 @@ namespace ClassProject.Presentation.Forms
         {
             SelectedRoleId = radLecturer.Checked ? 2 : 1;
             DialogResult = DialogResult.OK;
-            if(SelectedRoleId == 1)
+            if (SelectedRoleId == 1)
             {
                 AddStudentForm f = new AddStudentForm(SelectedRoleId);
                 f.Show();
                 this.Hide();
             }
+        }
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            LoginForm f = new LoginForm();
+            f.Show();
+            this.Hide();
         }
     }
 }

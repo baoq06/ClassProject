@@ -21,69 +21,80 @@
             btnOk = new Button();
             btnCancel = new Button();
             SuspendLayout();
-            //
+            // 
             // lblPrompt
-            //
+            // 
             lblPrompt.AutoSize = true;
             lblPrompt.Font = new Font("Segoe UI", 11F);
-            lblPrompt.Location = new Point(20, 18);
+            lblPrompt.Location = new Point(26, 23);
+            lblPrompt.Margin = new Padding(4, 0, 4, 0);
             lblPrompt.Name = "lblPrompt";
-            lblPrompt.Size = new Size(280, 30);
+            lblPrompt.Size = new Size(316, 41);
+            lblPrompt.TabIndex = 4;
             lblPrompt.Text = "Chọn vai trò tài khoản:";
-            //
+            // 
             // radStudent
-            //
+            // 
             radStudent.AutoSize = true;
             radStudent.Checked = true;
-            radStudent.Location = new Point(24, 58);
+            radStudent.Location = new Point(31, 74);
+            radStudent.Margin = new Padding(4, 4, 4, 4);
             radStudent.Name = "radStudent";
-            radStudent.Size = new Size(110, 29);
+            radStudent.Size = new Size(144, 36);
+            radStudent.TabIndex = 3;
             radStudent.TabStop = true;
             radStudent.Text = "Sinh viên";
             radStudent.UseVisualStyleBackColor = true;
-            //
+            // 
             // radLecturer
-            //
+            // 
             radLecturer.AutoSize = true;
-            radLecturer.Location = new Point(24, 96);
+            radLecturer.Location = new Point(31, 123);
+            radLecturer.Margin = new Padding(4, 4, 4, 4);
             radLecturer.Name = "radLecturer";
-            radLecturer.Size = new Size(120, 29);
+            radLecturer.Size = new Size(159, 36);
+            radLecturer.TabIndex = 2;
             radLecturer.TabStop = true;
             radLecturer.Text = "Giảng viên";
             radLecturer.UseVisualStyleBackColor = true;
-            //
+            // 
             // btnOk
-            //
-            btnOk.DialogResult = DialogResult.None;
-            btnOk.Location = new Point(48, 148);
+            // 
+            btnOk.Location = new Point(62, 189);
+            btnOk.Margin = new Padding(4, 4, 4, 4);
             btnOk.Name = "btnOk";
-            btnOk.Size = new Size(110, 36);
+            btnOk.Size = new Size(143, 46);
+            btnOk.TabIndex = 1;
             btnOk.Text = "Tiếp tục";
             btnOk.UseVisualStyleBackColor = true;
             btnOk.Click += btnOk_Click;
-            //
+            // 
             // btnCancel
-            //
+            // 
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(178, 148);
+            btnCancel.Location = new Point(231, 189);
+            btnCancel.Margin = new Padding(4, 4, 4, 4);
             btnCancel.Name = "btnCancel";
-            btnCancel.Size = new Size(110, 36);
+            btnCancel.Size = new Size(143, 46);
+            btnCancel.TabIndex = 0;
             btnCancel.Text = "Hủy";
             btnCancel.UseVisualStyleBackColor = true;
-            //
+            btnCancel.Click += btnCancel_Click;
+            // 
             // RegisterRoleForm
-            //
+            // 
             AcceptButton = btnOk;
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(338, 208);
+            ClientSize = new Size(439, 266);
             Controls.Add(btnCancel);
             Controls.Add(btnOk);
             Controls.Add(radLecturer);
             Controls.Add(radStudent);
             Controls.Add(lblPrompt);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Margin = new Padding(4, 4, 4, 4);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "RegisterRoleForm";
