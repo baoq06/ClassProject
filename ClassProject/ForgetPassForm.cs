@@ -135,10 +135,8 @@ namespace ClassProject.Presentation.Forms
         {
             try
             {
-                // Đọc từ app.config
                 string senderEmail = Environment.GetEnvironmentVariable("SENDER_EMAIL");
                 string senderPassword = Environment.GetEnvironmentVariable("SENDER_PASSWORD");
-
 
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress("ClassProject", senderEmail));

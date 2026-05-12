@@ -45,26 +45,34 @@ BEGIN
     );
 END
 GO
-
 -- Command: tạo bảng Students nếu chưa có (FK email -> Users.Email)
 IF OBJECT_ID(N'dbo.Students', N'U') IS NULL
 BEGIN
     CREATE TABLE dbo.Students
     (
         Id INT PRIMARY KEY IDENTITY(1,1),
-        Email NVARCHAR(100) NOT NULL UNIQUE,      -- 1 user = 1 student profile
+
+        UserId INT NULL,
+
         MSSV NVARCHAR(30) NOT NULL UNIQUE,
+
         FirstName NVARCHAR(100) NOT NULL,
         LastName NVARCHAR(100) NOT NULL,
+
         DateOfBirth DATETIME NULL,
         Gender NVARCHAR(10) NULL,
         Phone NVARCHAR(15) NULL,
+
         Address NVARCHAR(200) NULL,
         Hometown NVARCHAR(100) NULL,
+        Email NVARCHAR(100) NULL,
+        Picture VARBINARY(MAX) NULL,
+
         Created_At DATETIME DEFAULT GETDATE(),
 
-        CONSTRAINT FK_Students_Users_Email
-            FOREIGN KEY (Email) REFERENCES dbo.Users(Email)
+        CONSTRAINT FK_Students_Users_UserId
+            FOREIGN KEY (UserId)
+            REFERENCES dbo.Users(Id)
     );
 END
 GO
@@ -89,8 +97,13 @@ GO
 IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Username = N'admin' OR Email = N'admin@gmail.com')
 BEGIN
     INSERT INTO dbo.Users (Username, Email, Password, RoleId)
-    VALUES (N'admin', N'admin@gmail.com', N'1234', 0);
+    VALUES (N'admin', N'admin@gmail.com', N'$2a$12$cWrDKpQg5HtG7nixf4Wu1OTveL5mWu8h5.1tIrA43Ssc4JCPWX8GS', 0);
 END
+GO
+
+UPDATE dbo.Users
+SET Password = N'$2a$12$cWrDKpQg5HtG7nixf4Wu1OTveL5mWu8h5.1tIrA43Ssc4JCPWX8GS'
+WHERE Username = N'admin';
 GO
 
 -- Command: kiểm tra nhanh dữ liệu
@@ -98,3 +111,7 @@ SELECT * FROM dbo.Roles ORDER BY Id;
 SELECT TOP 50 * FROM dbo.Users ORDER BY Id DESC;
 SELECT TOP 50 * FROM dbo.Students ORDER BY Id DESC;
 GO
+
+--DROP TABLE Students;
+--DROP TABLE Users;
+--DROP TABLE Roles;

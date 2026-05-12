@@ -1,15 +1,18 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows.Forms;
 
 namespace ClassProject
 {
     public class Student
     {
         // Fields
+        private int _userId;
         private int _mssv;
         private string _firstName;
         private string _lastName;
@@ -22,6 +25,11 @@ namespace ClassProject
         private byte[] _picture;
 
         // Properties
+        public int UserId
+        {
+            get { return _userId; }
+            set { _userId = value; }
+        }
         public int Mssv
         {
             get { return _mssv; }
@@ -123,10 +131,12 @@ namespace ClassProject
         }
 
         // Constructor
+        public Student(){ }
         public Student(int mssv, string firstName, string lastName, DateTime dateOfBirth,
                        string gender, string phone, string address, string hometown,
-                       string email, byte[] picture = null)
+                       string email, byte[] picture = null, int userId = 0)
         {
+            UserId = userId;
             Mssv = mssv;
             FirstName = firstName;
             LastName = lastName;
@@ -189,18 +199,30 @@ namespace ClassProject
             }
             catch (SqlException ex)
             {
-                Console.WriteLine("Lỗi SQL: " + ex.Message);
+                MessageBox.Show("Lỗi SQL: " + ex.Message);
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Lỗi: " + ex.Message);
+                MessageBox.Show("Lỗi: " + ex.Message);
                 return false;
             }
             finally
             {
                 if (conn != null && conn.State == ConnectionState.Open)
                     conn.Close();
+            }
+        }
+        public bool IsMssvExist(int mssv, string connectionString)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                string query = "SELECT COUNT(*) FROM Students WHERE MSSV = @mssv";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@mssv", mssv);
+                conn.Open();
+                int count = (int)cmd.ExecuteScalar();
+                return count > 0;
             }
         }
     }

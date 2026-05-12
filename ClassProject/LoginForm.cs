@@ -37,12 +37,26 @@ namespace ClassProject
                     conn.Open();
 
                     // Lấy password hash từ DB thay vì so sánh thẳng
-                    string query = "SELECT Password FROM Users WHERE Username = @user";
+                    string query = "SELECT Id, Password, RoleId FROM Users WHERE Username = @user";
 
                     SqlCommand cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@user", username);
 
-                    string? hashedPassword = cmd.ExecuteScalar()?.ToString();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    string? hashedPassword = null;
+                    int userId = 0;
+                    int roleId = -1;
+
+                    
+                    if (reader.Read())
+                    {
+                        hashedPassword = reader["Password"].ToString();
+                        userId = Convert.ToInt32(reader["Id"]);
+                        roleId = Convert.ToInt32(reader["RoleId"]);
+                    }
+
+                    reader.Close();
 
                     // Kiểm tra username tồn tại và verify password
                     if (hashedPassword != null && BCrypt.Net.BCrypt.Verify(password, hashedPassword))
@@ -61,12 +75,19 @@ namespace ClassProject
                         }
                         Properties.Settings.Default.Save();
 
-                        MessageBox.Show("Đăng nhập thành công!");
+                        if (roleId == 0)
+                        {
+                            MessageBox.Show("Đăng nhập Admin thành công!");
 
-                        // TODO: mở form chính
-                        // MainForm f = new MainForm();
-                        // f.Show();
-                        // this.Hide();
+                            AddStudentForm f = new AddStudentForm(userId);
+                            f.Show();
+
+                            this.Hide();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Đăng nhập thành công!");
+                        }
                     }
                     else
                     {
