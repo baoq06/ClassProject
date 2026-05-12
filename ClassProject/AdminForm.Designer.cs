@@ -49,7 +49,6 @@
             dgvPending.Name = "dgvPending";
             dgvPending.ReadOnly = true;
             dgvPending.RowHeadersWidth = 82;
-            dgvPending.RowTemplate.Height = 41;
             dgvPending.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvPending.Size = new Size(1427, 880);
             dgvPending.TabIndex = 0;
@@ -57,56 +56,56 @@
             // btnBackToLogin
             // 
             btnBackToLogin.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnBackToLogin.BackColor = Color.DimGray;
+            btnBackToLogin.BackColor = SystemColors.ActiveBorder;
             btnBackToLogin.FlatStyle = FlatStyle.Flat;
-            btnBackToLogin.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            btnBackToLogin.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnBackToLogin.ForeColor = Color.White;
-            btnBackToLogin.Location = new Point(920, 24);
+            btnBackToLogin.Location = new Point(983, 24);
             btnBackToLogin.Name = "btnBackToLogin";
-            btnBackToLogin.Size = new Size(240, 52);
+            btnBackToLogin.Size = new Size(140, 52);
             btnBackToLogin.TabIndex = 4;
-            btnBackToLogin.Text = "Quay về đăng nhập";
+            btnBackToLogin.Text = "Back";
             btnBackToLogin.UseVisualStyleBackColor = false;
             btnBackToLogin.Click += btnBackToLogin_Click;
             // 
             // btnApprove
             // 
             btnApprove.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnApprove.BackColor = Color.ForestGreen;
+            btnApprove.BackColor = SystemColors.ActiveBorder;
             btnApprove.FlatStyle = FlatStyle.Flat;
-            btnApprove.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            btnApprove.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnApprove.ForeColor = Color.White;
-            btnApprove.Location = new Point(1175, 24);
+            btnApprove.Location = new Point(1146, 24);
             btnApprove.Name = "btnApprove";
-            btnApprove.Size = new Size(126, 52);
+            btnApprove.Size = new Size(148, 52);
             btnApprove.TabIndex = 1;
-            btnApprove.Text = "Duyệt";
+            btnApprove.Text = "Approve";
             btnApprove.UseVisualStyleBackColor = false;
             btnApprove.Click += btnApprove_Click;
             // 
             // btnRefresh
             // 
             btnRefresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnRefresh.BackColor = Color.DodgerBlue;
+            btnRefresh.BackColor = SystemColors.ActiveBorder;
             btnRefresh.FlatStyle = FlatStyle.Flat;
-            btnRefresh.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            btnRefresh.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnRefresh.ForeColor = Color.White;
             btnRefresh.Location = new Point(1310, 24);
             btnRefresh.Name = "btnRefresh";
             btnRefresh.Size = new Size(126, 52);
             btnRefresh.TabIndex = 2;
-            btnRefresh.Text = "Tải lại";
+            btnRefresh.Text = "Refresh";
             btnRefresh.UseVisualStyleBackColor = false;
             btnRefresh.Click += btnRefresh_Click;
             // 
             // lblTitle
             // 
             lblTitle.AutoSize = true;
-            lblTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold, GraphicsUnit.Point);
+            lblTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
             lblTitle.ForeColor = Color.White;
             lblTitle.Location = new Point(24, 28);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(498, 51);
+            lblTitle.Size = new Size(668, 51);
             lblTitle.TabIndex = 3;
             lblTitle.Text = "DANH SÁCH SINH VIÊN CHỜ DUYỆT";
             // 
