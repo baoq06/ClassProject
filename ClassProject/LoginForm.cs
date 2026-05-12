@@ -79,7 +79,7 @@ namespace ClassProject
                         {
                             MessageBox.Show("Đăng nhập Admin thành công!");
 
-                            AddStudentForm f = new AddStudentForm(userId);
+                            AdminForm f = new AdminForm();
                             f.Show();
 
                             this.Hide();
@@ -87,6 +87,9 @@ namespace ClassProject
                         else
                         {
                             MessageBox.Show("Đăng nhập thành công!");
+                            AddStudentForm f = new AddStudentForm(userId);
+                            f.Show();
+                            this.Hide();
                         }
                     }
                     else
