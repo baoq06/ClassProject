@@ -116,5 +116,24 @@ namespace ClassProject
             f.Show();
             this.Hide();
         }
+
+        private bool _showPassword = false;
+
+        private void picEye_Click(object sender, EventArgs e)
+        {
+            _showPassword = !_showPassword;
+
+            if (_showPassword)
+            {
+                txtPassword.UseSystemPasswordChar = false;
+                // Icon mắt mở - dùng text thay icon tạm
+                picEye.Image = Image.FromFile(@"C:\ClassProject\ClassProject\images\eye.png");
+            }
+            else
+            {
+                txtPassword.UseSystemPasswordChar = true;
+                picEye.Image = Image.FromFile(@"C:\ClassProject\ClassProject\images\hide.png");
+            }
+        }
     }
 }

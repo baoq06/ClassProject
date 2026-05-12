@@ -61,7 +61,7 @@ namespace ClassProject.Presentation.Forms
             string confirmPassword = txtConfirm.Text.Trim();
 
             if (inputOTP != _otp || _otp == "")
-            {
+            {   
                 MessageBox.Show("OTP không đúng!", "Warning",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -136,8 +136,9 @@ namespace ClassProject.Presentation.Forms
             try
             {
                 // Đọc từ app.config
-                string senderEmail = System.Configuration.ConfigurationManager.AppSettings["SenderEmail"];
-                string senderPassword = System.Configuration.ConfigurationManager.AppSettings["SenderAppPassword"];
+                string senderEmail = Environment.GetEnvironmentVariable("SENDER_EMAIL");
+                string senderPassword = Environment.GetEnvironmentVariable("SENDER_PASSWORD");
+
 
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress("ClassProject", senderEmail));
