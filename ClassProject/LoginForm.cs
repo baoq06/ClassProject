@@ -126,7 +126,7 @@ namespace ClassProject
 
         private void lblRegister_Click(object sender, EventArgs e)
         {
-            RegisterForm f = new RegisterForm();
+            RegisterRoleForm f = new RegisterRoleForm();
             f.Show();
             this.Hide();
         }

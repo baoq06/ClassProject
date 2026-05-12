@@ -1,4 +1,5 @@
-﻿using ClassProject.DataAccess.Db;
+﻿using ClassProject;
+using ClassProject.DataAccess.Db;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace ClassProject.Presentation.Forms
     public partial class RegisterForm : Form
     {
         My_DB db = new My_DB();
+
         public RegisterForm()
         {
             InitializeComponent();
@@ -26,7 +28,6 @@ namespace ClassProject.Presentation.Forms
             string password = txtPassword.Text.Trim();
             string confirmPassword = txtConfirm.Text.Trim();
 
-            // Check empty fields
             if (
                 username == "" ||
                 email == "" ||
@@ -40,7 +41,6 @@ namespace ClassProject.Presentation.Forms
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
                 );
-
                 return;
             }
 
@@ -63,8 +63,17 @@ namespace ClassProject.Presentation.Forms
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
                 );
-
                 return;
+            }
+
+            int roleId;
+            using (RegisterRoleForm roleForm = new RegisterRoleForm())
+            {
+                roleForm.StartPosition = FormStartPosition.CenterParent;
+                if (roleForm.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                roleId = roleForm.SelectedRoleId;
             }
 
             try
@@ -72,6 +81,8 @@ namespace ClassProject.Presentation.Forms
                 using (SqlConnection conn = db.GetConnection())
                 {
                     conn.Open();
+
+                    int newUserId;
 
                     using (SqlTransaction tx = conn.BeginTransaction())
                     {
@@ -96,7 +107,6 @@ namespace ClassProject.Presentation.Forms
                                         MessageBoxButtons.OK,
                                         MessageBoxIcon.Warning
                                     );
-
                                     return;
                                 }
                             }
@@ -104,16 +114,31 @@ namespace ClassProject.Presentation.Forms
                             const string insertQuery =
                                 "INSERT INTO dbo.Users " +
                                 "(Username, Email, Password, RoleId) " +
+                                "OUTPUT INSERTED.Id " +
                                 "VALUES " +
-                                "(@username, @email, @password, 2)";
+                                "(@username, @email, @password, @roleId)";
 
                             using (SqlCommand insertCmd = new SqlCommand(insertQuery, conn, tx))
                             {
                                 insertCmd.Parameters.AddWithValue("@username", username);
                                 insertCmd.Parameters.AddWithValue("@email", email);
                                 insertCmd.Parameters.AddWithValue("@password", BCrypt.Net.BCrypt.HashPassword(password));
+                                insertCmd.Parameters.AddWithValue("@roleId", roleId);
 
-                                insertCmd.ExecuteNonQuery();
+                                object scalar = insertCmd.ExecuteScalar();
+                                if (scalar == null || scalar == DBNull.Value)
+                                {
+                                    tx.Rollback();
+                                    MessageBox.Show(
+                                        "Register failed: could not read new user id.",
+                                        "Error",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error
+                                    );
+                                    return;
+                                }
+
+                                newUserId = Convert.ToInt32(scalar);
                             }
 
                             const string verifyQuery =
@@ -136,7 +161,6 @@ namespace ClassProject.Presentation.Forms
                                         MessageBoxButtons.OK,
                                         MessageBoxIcon.Error
                                     );
-
                                     return;
                                 }
                             }
@@ -153,7 +177,6 @@ namespace ClassProject.Presentation.Forms
                             {
                                 // ignore rollback errors
                             }
-
                             throw;
                         }
                     }
@@ -164,9 +187,25 @@ namespace ClassProject.Presentation.Forms
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information
                     );
-                    string newUser = txtUsername.Text.Trim();
-                    LoginForm login = new LoginForm(newUser);
-                    login.Show();
+
+                    if (roleId == 1)
+                    {
+                        AddStudentForm addStudent = new AddStudentForm(newUserId);
+                        addStudent.Show();
+                    }
+                    else
+                    {
+                        // TODO: khi có AddLecturerForm
+                        // AddLecturerForm addLecturer = new AddLecturerForm(newUserId);
+                        // addLecturer.Show();
+                        MessageBox.Show(
+                            "Đăng ký giảng viên thành công. Form bổ sung thông tin (AddLecturerForm) sẽ thêm sau.",
+                            "Thông báo",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information
+                        );
+                    }
+
                     this.Close();
                 }
             }
@@ -183,7 +222,7 @@ namespace ClassProject.Presentation.Forms
 
         private void lblBacktoLogin_Click(object sender, EventArgs e)
         {
-            LoginForm f = new  LoginForm();
+            LoginForm f = new LoginForm();
             f.Show();
             this.Hide();
         }
