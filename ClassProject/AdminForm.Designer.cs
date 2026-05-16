@@ -31,7 +31,9 @@
             dgvPending = new DataGridView();
             btnBackToLogin = new Button();
             btnApprove = new Button();
+            btnReject = new Button();
             btnRefresh = new Button();
+            btnUploadExcel = new Button();
             lblTitle = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvPending).BeginInit();
             SuspendLayout();
@@ -53,6 +55,21 @@
             dgvPending.Size = new Size(1427, 880);
             dgvPending.TabIndex = 0;
             // 
+            // btnUploadExcel
+            // 
+            btnUploadExcel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnUploadExcel.BackColor = Color.ForestGreen;
+            btnUploadExcel.FlatStyle = FlatStyle.Flat;
+            btnUploadExcel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnUploadExcel.ForeColor = Color.White;
+            btnUploadExcel.Location = new Point(730, 24);
+            btnUploadExcel.Name = "btnUploadExcel";
+            btnUploadExcel.Size = new Size(180, 52);
+            btnUploadExcel.TabIndex = 5;
+            btnUploadExcel.Text = "📂 Upload Excel";
+            btnUploadExcel.UseVisualStyleBackColor = false;
+            btnUploadExcel.Click += btnUploadExcel_Click;
+            // 
             // btnBackToLogin
             // 
             btnBackToLogin.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -60,26 +77,41 @@
             btnBackToLogin.FlatStyle = FlatStyle.Flat;
             btnBackToLogin.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnBackToLogin.ForeColor = Color.White;
-            btnBackToLogin.Location = new Point(983, 24);
+            btnBackToLogin.Location = new Point(930, 24);
             btnBackToLogin.Name = "btnBackToLogin";
-            btnBackToLogin.Size = new Size(140, 52);
+            btnBackToLogin.Size = new Size(120, 52);
             btnBackToLogin.TabIndex = 4;
             btnBackToLogin.Text = "Back";
             btnBackToLogin.UseVisualStyleBackColor = false;
             btnBackToLogin.Click += btnBackToLogin_Click;
             // 
+            // btnReject
+            // 
+            btnReject.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnReject.BackColor = Color.Crimson;
+            btnReject.FlatStyle = FlatStyle.Flat;
+            btnReject.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnReject.ForeColor = Color.White;
+            btnReject.Location = new Point(1070, 24);
+            btnReject.Name = "btnReject";
+            btnReject.Size = new Size(120, 52);
+            btnReject.TabIndex = 6;
+            btnReject.Text = "❌ Reject";
+            btnReject.UseVisualStyleBackColor = false;
+            btnReject.Click += btnReject_Click;
+            // 
             // btnApprove
             // 
             btnApprove.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnApprove.BackColor = SystemColors.ActiveBorder;
+            btnApprove.BackColor = Color.DodgerBlue;
             btnApprove.FlatStyle = FlatStyle.Flat;
             btnApprove.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnApprove.ForeColor = Color.White;
-            btnApprove.Location = new Point(1146, 24);
+            btnApprove.Location = new Point(1210, 24);
             btnApprove.Name = "btnApprove";
-            btnApprove.Size = new Size(148, 52);
+            btnApprove.Size = new Size(120, 52);
             btnApprove.TabIndex = 1;
-            btnApprove.Text = "Approve";
+            btnApprove.Text = "✅ Approve";
             btnApprove.UseVisualStyleBackColor = false;
             btnApprove.Click += btnApprove_Click;
             // 
@@ -90,9 +122,9 @@
             btnRefresh.FlatStyle = FlatStyle.Flat;
             btnRefresh.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnRefresh.ForeColor = Color.White;
-            btnRefresh.Location = new Point(1310, 24);
+            btnRefresh.Location = new Point(1350, 24);
             btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(126, 52);
+            btnRefresh.Size = new Size(100, 52);
             btnRefresh.TabIndex = 2;
             btnRefresh.Text = "Refresh";
             btnRefresh.UseVisualStyleBackColor = false;
@@ -118,7 +150,9 @@
             Controls.Add(lblTitle);
             Controls.Add(btnRefresh);
             Controls.Add(btnApprove);
+            Controls.Add(btnReject);
             Controls.Add(btnBackToLogin);
+            Controls.Add(btnUploadExcel);
             Controls.Add(dgvPending);
             Name = "AdminForm";
             Text = "AdminForm";
@@ -133,7 +167,10 @@
         private DataGridView dgvPending;
         private Button btnBackToLogin;
         private Button btnApprove;
+        private Button btnReject;
         private Button btnRefresh;
+        private Button btnUploadExcel;
         private Label lblTitle;
     }
 }
+

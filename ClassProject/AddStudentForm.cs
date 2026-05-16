@@ -1,13 +1,9 @@
 ﻿using ClassProject.DataAccess.Db;
 using Microsoft.Data.SqlClient;
-using Microsoft.VisualBasic.ApplicationServices;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -17,49 +13,114 @@ namespace ClassProject
     {
         byte[] studentImage = null;
         private int currentUserId;
+
         public AddStudentForm(int userId)
         {
             InitializeComponent();
             currentUserId = userId;
         }
 
+        // ==================== FORM LOAD: Tải dữ liệu từ Students ====================
         private void AddStudentForm_Load(object sender, EventArgs e)
         {
-
+            LoadStudentData();
         }
 
+        private void LoadStudentData()
+        {
+            My_DB db = new My_DB();
+
+            using (SqlConnection conn = db.GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+
+                    const string sql = @"
+SELECT MSSV, FirstName, LastName, DateOfBirth, Gender, Phone, Address, Hometown, Email, Picture
+FROM dbo.Students
+WHERE UserId = @UserId;";
+
+                    using (SqlCommand cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UserId", currentUserId);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Điền dữ liệu vào form
+                                txtMSSV.Text = reader["MSSV"]?.ToString() ?? "";
+                                txtMSSV.ReadOnly = true; // MSSV không cho sửa
+                                txtMSSV.BackColor = Color.LightGray;
+
+                                txtFirstName.Text = reader["FirstName"]?.ToString() ?? "";
+                                txtLastName.Text = reader["LastName"]?.ToString() ?? "";
+
+                                if (reader["DateOfBirth"] != DBNull.Value)
+                                    dtpDateOfBirth.Value = Convert.ToDateTime(reader["DateOfBirth"]);
+
+                                string gender = reader["Gender"]?.ToString() ?? "";
+                                int genderIndex = cboGender.FindStringExact(gender);
+                                if (genderIndex >= 0)
+                                    cboGender.SelectedIndex = genderIndex;
+
+                                txtPhone.Text = reader["Phone"]?.ToString() ?? "";
+                                txtAddress.Text = reader["Address"]?.ToString() ?? "";
+                                txtHometown.Text = reader["Hometown"]?.ToString() ?? "";
+                                txtEmail.Text = reader["Email"]?.ToString() ?? "";
+
+                                // Tải ảnh nếu có
+                                if (reader["Picture"] != DBNull.Value)
+                                {
+                                    studentImage = (byte[])reader["Picture"];
+                                    using (MemoryStream ms = new MemoryStream(studentImage))
+                                    {
+                                        picStudent.Image = Image.FromStream(ms);
+                                    }
+                                }
+
+                                // Đổi text nút thành "CẬP NHẬT"
+                                btnAdd.Text = "CẬP NHẬT";
+                            }
+                            else
+                            {
+                                // Không tìm thấy record → sinh viên chưa có dữ liệu
+                                MessageBox.Show(
+                                    "Không tìm thấy thông tin sinh viên cho tài khoản này.",
+                                    "Thông báo",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi tải dữ liệu: " + ex.Message);
+                }
+            }
+        }
+
+        // ==================== CHỌN ẢNH ====================
         private void btnChooseImage_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-
             ofd.Filter = "Image Files|*.jpg;*.png;*.jpeg";
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 picStudent.Image = Image.FromFile(ofd.FileName);
-
                 MemoryStream ms = new MemoryStream();
-
                 picStudent.Image.Save(ms, picStudent.Image.RawFormat);
-
                 studentImage = ms.ToArray();
             }
         }
 
+        // ==================== CẬP NHẬT THÔNG TIN ====================
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            if (txtMSSV.Text.Trim() == "")
-            {
-                MessageBox.Show("Nhập MSSV");
-                return;
-            }
-
-            if (!int.TryParse(txtMSSV.Text, out _))
-            {
-                MessageBox.Show("MSSV phải là số");
-                return;
-            }
-
+            // Validate
             if (txtLastName.Text.Trim() == "")
             {
                 MessageBox.Show("Nhập tên");
@@ -72,23 +133,18 @@ namespace ClassProject
                 return;
             }
 
-            if (!IsValidEmail(txtEmail.Text))
+            if (!string.IsNullOrWhiteSpace(txtEmail.Text) && !IsValidEmail(txtEmail.Text))
             {
                 MessageBox.Show("Email không hợp lệ");
                 return;
             }
 
-            if (!IsValidPhone(txtPhone.Text))
+            if (!string.IsNullOrWhiteSpace(txtPhone.Text) && !IsValidPhone(txtPhone.Text))
             {
                 MessageBox.Show("Số điện thoại không hợp lệ");
                 return;
             }
 
-            if (studentImage == null)
-            {
-                MessageBox.Show("Chọn ảnh");
-                return;
-            }
             My_DB db = new My_DB();
 
             using (SqlConnection conn = db.GetConnection())
@@ -97,39 +153,45 @@ namespace ClassProject
                 {
                     conn.Open();
 
-                    if (IsMssvExistsInAnyTable(int.Parse(txtMSSV.Text), conn))
+                    const string updateSql = @"
+UPDATE dbo.Students
+SET FirstName   = @FirstName,
+    LastName    = @LastName,
+    DateOfBirth = @DateOfBirth,
+    Gender      = @Gender,
+    Phone       = @Phone,
+    Address     = @Address,
+    Hometown    = @Hometown,
+    Email       = @Email,
+    Picture     = @Picture
+WHERE UserId = @UserId;";
+
+                    using (SqlCommand cmd = new SqlCommand(updateSql, conn))
                     {
-                        MessageBox.Show("Mã số sinh viên này đã tồn tại (Students hoặc Pending)!");
-                        return;
-                    }
-
-                    EnsurePendingStudentsTable(conn);
-
-                    const string insertPending = @"
-INSERT INTO dbo.PendingStudents
-(UserId, Mssv, FirstName, LastName, DateOfBirth, Gender, Phone, Address, Hometown, Email, Picture)
-VALUES
-(@UserId, @Mssv, @FirstName, @LastName, @DateOfBirth, @Gender, @Phone, @Address, @Hometown, @Email, @Picture);";
-
-                    using (SqlCommand cmd = new SqlCommand(insertPending, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@UserId", currentUserId);
-                        cmd.Parameters.AddWithValue("@Mssv", int.Parse(txtMSSV.Text));
-                        cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text);
-                        cmd.Parameters.AddWithValue("@LastName", txtLastName.Text);
+                        cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@LastName", txtLastName.Text.Trim());
                         cmd.Parameters.AddWithValue("@DateOfBirth", dtpDateOfBirth.Value);
                         cmd.Parameters.AddWithValue("@Gender", cboGender.Text);
-                        cmd.Parameters.AddWithValue("@Phone", txtPhone.Text);
-                        cmd.Parameters.AddWithValue("@Address", string.IsNullOrWhiteSpace(txtAddress.Text) ? (object)DBNull.Value : txtAddress.Text);
-                        cmd.Parameters.AddWithValue("@Hometown", string.IsNullOrWhiteSpace(txtHometown.Text) ? (object)DBNull.Value : txtHometown.Text);
-                        cmd.Parameters.AddWithValue("@Email", txtEmail.Text);
+                        cmd.Parameters.AddWithValue("@Phone", txtPhone.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Address", string.IsNullOrWhiteSpace(txtAddress.Text) ? (object)DBNull.Value : txtAddress.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Hometown", string.IsNullOrWhiteSpace(txtHometown.Text) ? (object)DBNull.Value : txtHometown.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Email", string.IsNullOrWhiteSpace(txtEmail.Text) ? (object)DBNull.Value : txtEmail.Text.Trim());
                         cmd.Parameters.AddWithValue("@Picture", studentImage ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@UserId", currentUserId);
 
-                        cmd.ExecuteNonQuery();
+                        int rows = cmd.ExecuteNonQuery();
+
+                        if (rows > 0)
+                        {
+                            MessageBox.Show("Cập nhật thông tin thành công!", "Thành công",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Không tìm thấy record để cập nhật.", "Lỗi",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
-
-                    MessageBox.Show("Đã gửi thông tin. Vui lòng chờ Admin duyệt.");
-                    btnClear.PerformClick();
                 }
                 catch (Exception ex)
                 {
@@ -138,81 +200,24 @@ VALUES
             }
         }
 
+        // ==================== CLEAR ====================
         private void btnClear_Click(object sender, EventArgs e)
         {
-            txtMSSV.Clear();
-            txtFirstName.Clear();
-            txtLastName.Clear();
-            txtPhone.Clear();
-            txtAddress.Clear();
-            txtHometown.Clear();
-            txtEmail.Clear();
-
-            cboGender.SelectedIndex = -1;
-            cboGender.Text = "";
-
-            dtpDateOfBirth.Value = DateTime.Now;
-
-            picStudent.Image = null;
-
-            studentImage = null;
+            // Reload dữ liệu gốc từ DB thay vì xóa trắng
+            LoadStudentData();
         }
 
+        // ==================== VALIDATION ====================
         bool IsValidEmail(string email)
         {
             string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-
             return Regex.IsMatch(email, pattern);
         }
+
         bool IsValidPhone(string phone)
         {
             return Regex.IsMatch(phone, @"^[0-9]{10}$");
         }
-
-        private static bool IsMssvExistsInAnyTable(int mssv, SqlConnection conn)
-        {
-            const string sql = @"
-SELECT
-    (SELECT COUNT(*) FROM dbo.Students WHERE MSSV = @mssv) +
-    (SELECT COUNT(*) FROM dbo.PendingStudents WHERE Mssv = @mssv);";
-
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
-            {
-                cmd.Parameters.AddWithValue("@mssv", mssv);
-                int count = Convert.ToInt32(cmd.ExecuteScalar());
-                return count > 0;
-            }
-        }
-
-        private static void EnsurePendingStudentsTable(SqlConnection conn)
-        {
-            const string sql = @"
-IF OBJECT_ID('dbo.PendingStudents', 'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.PendingStudents (
-        Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-        UserId INT NOT NULL,
-        Mssv INT NOT NULL,
-        FirstName NVARCHAR(50) NOT NULL,
-        LastName NVARCHAR(50) NOT NULL,
-        DateOfBirth DATETIME NOT NULL,
-        Gender NVARCHAR(10) NOT NULL,
-        Phone NVARCHAR(20) NOT NULL,
-        Address NVARCHAR(255) NULL,
-        Hometown NVARCHAR(255) NULL,
-        Email NVARCHAR(255) NOT NULL,
-        Picture VARBINARY(MAX) NULL,
-        SubmittedAt DATETIME NOT NULL CONSTRAINT DF_PendingStudents_SubmittedAt DEFAULT(GETDATE())
-    );
-
-    CREATE UNIQUE INDEX UX_PendingStudents_UserId ON dbo.PendingStudents(UserId);
-    CREATE UNIQUE INDEX UX_PendingStudents_Mssv ON dbo.PendingStudents(Mssv);
-END";
-
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
-            {
-                cmd.ExecuteNonQuery();
-            }
-        }
     }
 }
+

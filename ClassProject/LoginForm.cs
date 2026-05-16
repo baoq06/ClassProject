@@ -7,14 +7,10 @@ namespace ClassProject
 {
     public partial class LoginForm : Form
     {
-        public LoginForm(string registeredUser = "")
+        public LoginForm()
         {
             InitializeComponent();
             this.Load += LoginForm_Load;
-            if (!string.IsNullOrEmpty(registeredUser))
-            {
-                txtUsername.Text = registeredUser;
-            }
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -125,13 +121,6 @@ namespace ClassProject
             {
                 txtUsername.Focus();
             }
-        }
-
-        private void lblRegister_Click(object sender, EventArgs e)
-        {
-            RegisterRoleForm f = new RegisterRoleForm();
-            f.Show();
-            this.Hide();
         }
 
         private void lblForgetPassword_Click(object sender, EventArgs e)
