@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
-using Microsoft.Data.SqlClient;
 using MimeKit;
 using MailKit.Net.Smtp;
 using BCrypt.Net;
-using ClassProject.DataAccess.Db;
 
 namespace ClassProject.Presentation.Forms
 {
@@ -13,12 +11,9 @@ namespace ClassProject.Presentation.Forms
         private string _otp = "";
         private string _verifiedEmail = "";
 
-        My_DB db = new My_DB();
-
         public ForgetPassForm()
         {
             InitializeComponent();
-            // Ẩn phần OTP và mật khẩu mới lúc đầu
             SetOTPSectionVisible(false);
         }
 
@@ -33,19 +28,17 @@ namespace ClassProject.Presentation.Forms
                 return;
             }
 
-            // Kiểm tra email có trong DB không
-            if (!EmailExists(email))
+            Users user = new Users();
+            if (!user.EmailExists(email))
             {
                 MessageBox.Show("Email không tồn tại trong hệ thống!", "Warning",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Tạo OTP 6 số
             _otp = new Random().Next(100000, 999999).ToString();
             _verifiedEmail = email;
 
-            // Gửi email
             if (SendOTPEmail(email, _otp))
             {
                 MessageBox.Show("OTP đã được gửi đến email của bạn!", "Success",
@@ -61,7 +54,7 @@ namespace ClassProject.Presentation.Forms
             string confirmPassword = txtConfirm.Text.Trim();
 
             if (inputOTP != _otp || _otp == "")
-            {   
+            {
                 MessageBox.Show("OTP không đúng!", "Warning",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -83,24 +76,23 @@ namespace ClassProject.Presentation.Forms
 
             try
             {
-                using (SqlConnection conn = db.GetConnection())
+                Users user = new Users();
+                string hashed = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+                if (user.ResetPassword(_verifiedEmail, hashed))
                 {
-                    conn.Open();
-                    string query = "UPDATE Users SET Password = @password WHERE Email = @email";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@password", BCrypt.Net.BCrypt.HashPassword(newPassword));
-                        cmd.Parameters.AddWithValue("@email", _verifiedEmail);
-                        cmd.ExecuteNonQuery();
-                    }
+                    MessageBox.Show("Đặt lại mật khẩu thành công!", "Success",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LoginForm f = new LoginForm();
+                    f.Show();
+                    this.Close();
                 }
-
-                MessageBox.Show("Đặt lại mật khẩu thành công!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                LoginForm f = new LoginForm();
-                f.Show();
-                this.Close();
+                else
+                {
+                    MessageBox.Show("Không cập nhật được mật khẩu.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -114,21 +106,6 @@ namespace ClassProject.Presentation.Forms
             LoginForm f = new LoginForm();
             f.Show();
             this.Hide();
-        }
-
-        // ==================== HÀM HỖ TRỢ ====================
-        private bool EmailExists(string email)
-        {
-            using (SqlConnection conn = db.GetConnection())
-            {
-                conn.Open();
-                string query = "SELECT COUNT(*) FROM Users WHERE Email = @email";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@email", email);
-                    return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
-                }
-            }
         }
 
         private bool SendOTPEmail(string toEmail, string otp)

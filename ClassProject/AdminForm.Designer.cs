@@ -2,175 +2,117 @@
 {
     partial class AdminForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
-            {
                 components.Dispose();
-            }
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
-            dgvPending = new DataGridView();
-            btnBackToLogin = new Button();
+            panelSidebar = new Panel();
+            lblAdmin = new Label();
             btnApprove = new Button();
-            btnReject = new Button();
-            btnRefresh = new Button();
-            btnUploadExcel = new Button();
-            lblTitle = new Label();
-            ((System.ComponentModel.ISupportInitialize)dgvPending).BeginInit();
+            btnView = new Button();
+            btnAddStudent = new Button();
+            btnLogout = new Button();
+            panelMain = new Panel();
+            panelSidebar.SuspendLayout();
             SuspendLayout();
             // 
-            // dgvPending
+            // panelSidebar
             // 
-            dgvPending.AllowUserToAddRows = false;
-            dgvPending.AllowUserToDeleteRows = false;
-            dgvPending.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dgvPending.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvPending.BackgroundColor = Color.White;
-            dgvPending.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvPending.Location = new Point(24, 96);
-            dgvPending.MultiSelect = false;
-            dgvPending.Name = "dgvPending";
-            dgvPending.ReadOnly = true;
-            dgvPending.RowHeadersWidth = 82;
-            dgvPending.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvPending.Size = new Size(1427, 880);
-            dgvPending.TabIndex = 0;
+            panelSidebar.BackColor = Color.FromArgb(44, 62, 80);
+            panelSidebar.Controls.Add(lblAdmin);
+            panelSidebar.Controls.Add(btnLogout);
+            panelSidebar.Dock = DockStyle.Left;
+            panelSidebar.Width = 200;
+            panelSidebar.Name = "panelSidebar";
             // 
-            // btnUploadExcel
+            // lblAdmin
             // 
-            btnUploadExcel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnUploadExcel.BackColor = Color.ForestGreen;
-            btnUploadExcel.FlatStyle = FlatStyle.Flat;
-            btnUploadExcel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnUploadExcel.ForeColor = Color.White;
-            btnUploadExcel.Location = new Point(730, 24);
-            btnUploadExcel.Name = "btnUploadExcel";
-            btnUploadExcel.Size = new Size(180, 52);
-            btnUploadExcel.TabIndex = 5;
-            btnUploadExcel.Text = "📂 Upload Excel";
-            btnUploadExcel.UseVisualStyleBackColor = false;
-            btnUploadExcel.Click += btnUploadExcel_Click;
-            // 
-            // btnBackToLogin
-            // 
-            btnBackToLogin.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnBackToLogin.BackColor = SystemColors.ActiveBorder;
-            btnBackToLogin.FlatStyle = FlatStyle.Flat;
-            btnBackToLogin.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnBackToLogin.ForeColor = Color.White;
-            btnBackToLogin.Location = new Point(930, 24);
-            btnBackToLogin.Name = "btnBackToLogin";
-            btnBackToLogin.Size = new Size(120, 52);
-            btnBackToLogin.TabIndex = 4;
-            btnBackToLogin.Text = "Back";
-            btnBackToLogin.UseVisualStyleBackColor = false;
-            btnBackToLogin.Click += btnBackToLogin_Click;
-            // 
-            // btnReject
-            // 
-            btnReject.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnReject.BackColor = Color.Crimson;
-            btnReject.FlatStyle = FlatStyle.Flat;
-            btnReject.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnReject.ForeColor = Color.White;
-            btnReject.Location = new Point(1070, 24);
-            btnReject.Name = "btnReject";
-            btnReject.Size = new Size(120, 52);
-            btnReject.TabIndex = 6;
-            btnReject.Text = "❌ Reject";
-            btnReject.UseVisualStyleBackColor = false;
-            btnReject.Click += btnReject_Click;
+            lblAdmin.Dock = DockStyle.Top;
+            lblAdmin.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblAdmin.ForeColor = Color.White;
+            lblAdmin.Height = 56;
+            lblAdmin.Text = "ADMIN";
+            lblAdmin.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // btnApprove
             // 
-            btnApprove.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnApprove.BackColor = Color.DodgerBlue;
-            btnApprove.FlatStyle = FlatStyle.Flat;
-            btnApprove.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnApprove.ForeColor = Color.White;
-            btnApprove.Location = new Point(1210, 24);
-            btnApprove.Name = "btnApprove";
-            btnApprove.Size = new Size(120, 52);
-            btnApprove.TabIndex = 1;
-            btnApprove.Text = "✅ Approve";
-            btnApprove.UseVisualStyleBackColor = false;
+            ConfigureSidebarButton(btnApprove, "Approve", 64);
             btnApprove.Click += btnApprove_Click;
             // 
-            // btnRefresh
+            // btnView
             // 
-            btnRefresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnRefresh.BackColor = SystemColors.ActiveBorder;
-            btnRefresh.FlatStyle = FlatStyle.Flat;
-            btnRefresh.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnRefresh.ForeColor = Color.White;
-            btnRefresh.Location = new Point(1350, 24);
-            btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(100, 52);
-            btnRefresh.TabIndex = 2;
-            btnRefresh.Text = "Refresh";
-            btnRefresh.UseVisualStyleBackColor = false;
-            btnRefresh.Click += btnRefresh_Click;
+            ConfigureSidebarButton(btnView, "View", 120);
+            btnView.Click += btnView_Click;
             // 
-            // lblTitle
+            // btnAddStudent
             // 
-            lblTitle.AutoSize = true;
-            lblTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            lblTitle.ForeColor = Color.White;
-            lblTitle.Location = new Point(24, 28);
-            lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(668, 51);
-            lblTitle.TabIndex = 3;
-            lblTitle.Text = "DANH SÁCH SINH VIÊN CHỜ DUYỆT";
+            ConfigureSidebarButton(btnAddStudent, "Add Student", 176);
+            btnAddStudent.Click += btnAddStudent_Click;
+            // 
+            // btnLogout
+            // 
+            btnLogout.Dock = DockStyle.Bottom;
+            btnLogout.BackColor = Color.FromArgb(192, 57, 43);
+            btnLogout.FlatStyle = FlatStyle.Flat;
+            btnLogout.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnLogout.ForeColor = Color.White;
+            btnLogout.Height = 48;
+            btnLogout.Margin = new Padding(12, 8, 12, 12);
+            btnLogout.Text = "Đăng xuất";
+            btnLogout.UseVisualStyleBackColor = false;
+            btnLogout.Click += btnLogout_Click;
+            // 
+            // panelMain
+            // 
+            panelMain.BackColor = Color.White;
+            panelMain.Dock = DockStyle.Fill;
+            panelMain.Name = "panelMain";
             // 
             // AdminForm
             // 
-            AutoScaleDimensions = new SizeF(13F, 32F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.SteelBlue;
-            ClientSize = new Size(1475, 1085);
-            Controls.Add(lblTitle);
-            Controls.Add(btnRefresh);
-            Controls.Add(btnApprove);
-            Controls.Add(btnReject);
-            Controls.Add(btnBackToLogin);
-            Controls.Add(btnUploadExcel);
-            Controls.Add(dgvPending);
+            BackColor = Color.White;
+            ClientSize = new Size(1200, 700);
+            Controls.Add(panelMain);
+            Controls.Add(panelSidebar);
+            MinimumSize = new Size(900, 600);
             Name = "AdminForm";
-            Text = "AdminForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Quản trị hệ thống";
             Load += AdminForm_Load;
-            ((System.ComponentModel.ISupportInitialize)dgvPending).EndInit();
+            panelSidebar.ResumeLayout(false);
             ResumeLayout(false);
-            PerformLayout();
         }
 
-        #endregion
+        private void ConfigureSidebarButton(Button btn, string text, int top)
+        {
+            btn.BackColor = Color.FromArgb(44, 62, 80);
+            btn.FlatAppearance.BorderSize = 0;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btn.ForeColor = Color.White;
+            btn.Location = new Point(12, top);
+            btn.Size = new Size(176, 48);
+            btn.Text = text;
+            btn.TextAlign = ContentAlignment.MiddleLeft;
+            btn.UseVisualStyleBackColor = false;
+            panelSidebar.Controls.Add(btn);
+        }
 
-        private DataGridView dgvPending;
-        private Button btnBackToLogin;
+        private Panel panelSidebar;
+        private Panel panelMain;
+        private Label lblAdmin;
         private Button btnApprove;
-        private Button btnReject;
-        private Button btnRefresh;
-        private Button btnUploadExcel;
-        private Label lblTitle;
+        private Button btnView;
+        private Button btnAddStudent;
+        private Button btnLogout;
     }
 }
-
