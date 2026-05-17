@@ -1,3 +1,6 @@
+using ClassProject.Models;
+using ClassProject.Repositories;
+using ClassProject.Services;
 using System;
 using System.Drawing;
 using System.IO;
@@ -69,17 +72,24 @@ namespace ClassProject
                 return;
             }
 
-            bool ok = Student.AddWithNewAccount(
-                mssv,
-                string.IsNullOrEmpty(firstName) ? lastName : firstName,
-                lastName,
-                dtpDateOfBirth.Value,
-                gender,
-                txtPhone.Text.Trim(),
-                txtAddress.Text.Trim(),
-                txtHometown.Text.Trim(),
-                txtEmail.Text.Trim(),
-                _studentImage);
+            StudentService service = new StudentService();
+            Student student = new Student
+            {
+                Mssv = mssv,
+                FirstName = string.IsNullOrEmpty(firstName)
+                    ? lastName
+                    : firstName,
+
+                LastName = lastName,
+                DateOfBirth = dtpDateOfBirth.Value,
+                Gender = gender,
+                Phone = txtPhone.Text.Trim(),
+                Address = txtAddress.Text.Trim(),
+                Hometown = txtHometown.Text.Trim(),
+                Email = txtEmail.Text.Trim(),
+                Picture = _studentImage
+            };
+            bool ok = service.AddWithNewAccount(student);
 
             if (ok)
             {

@@ -1,3 +1,4 @@
+using ClassProject.Repositories;
 using System;
 using System.Data;
 using System.Drawing;
@@ -20,7 +21,8 @@ namespace ClassProject
 
         private void AdminEditStudentForm_Load(object sender, EventArgs e)
         {
-            DataTable dt = Student.GetById(_studentId);
+            StudentRepository repo = new StudentRepository();
+            DataTable dt = repo.GetById(_studentId);
             if (dt.Rows.Count == 0)
             {
                 MessageBox.Show("Không tìm thấy sinh viên.");
@@ -104,7 +106,8 @@ namespace ClassProject
                 return;
             }
 
-            bool ok = Student.UpdateById(
+            StudentRepository repo = new StudentRepository();
+            bool ok = repo.UpdateById(
                 _studentId,
                 txtFirstName.Text.Trim(),
                 txtLastName.Text.Trim(),

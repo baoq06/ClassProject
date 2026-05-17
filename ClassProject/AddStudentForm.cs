@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassProject.Repositories;
+using System;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -27,7 +28,8 @@ namespace ClassProject
         {
             try
             {
-                DataTable dt = Student.GetByUserId(currentUserId);
+                StudentRepository repo = new StudentRepository();
+                DataTable dt = repo.GetByUserId(currentUserId);
 
                 if (dt.Rows.Count == 0)
                 {
@@ -120,7 +122,9 @@ namespace ClassProject
 
             try
             {
-                bool ok = Student.UpdateByUserId(
+
+                StudentRepository repo = new StudentRepository();
+                bool ok = repo.UpdateByUserId(
                     currentUserId,
                     txtFirstName.Text.Trim(),
                     txtLastName.Text.Trim(),
@@ -130,7 +134,8 @@ namespace ClassProject
                     txtAddress.Text.Trim(),
                     txtHometown.Text.Trim(),
                     txtEmail.Text.Trim(),
-                    studentImage);
+                    studentImage
+                );
 
                 if (ok)
                 {

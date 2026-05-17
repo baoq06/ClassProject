@@ -1,3 +1,4 @@
+using ClassProject.Repositories;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -20,16 +21,18 @@ namespace ClassProject
 
         private void LoadStudents()
         {
-            dgvStudents.DataSource = Student.GetAllStudents();
+            StudentRepository repo = new StudentRepository();
+            dgvStudents.DataSource = repo.GetAll();
             ConfigureGrid();
         }
 
         private void SearchStudents()
         {
+            StudentRepository repo = new StudentRepository();
             string keyword = txtSearch.Text.Trim();
             dgvStudents.DataSource = string.IsNullOrEmpty(keyword)
-                ? Student.GetAllStudents()
-                : Student.SearchStudents(keyword);
+                ? repo.GetAll()
+                : repo.Search(keyword);
             ConfigureGrid();
         }
 
@@ -123,7 +126,8 @@ namespace ClassProject
             if (confirm != DialogResult.Yes)
                 return;
 
-            if (Student.DeleteById(studentId.Value))
+            StudentRepository repo = new StudentRepository();
+            if (repo.DeleteById(studentId.Value))
             {
                 MessageBox.Show("Đã xóa sinh viên.", "Thành công",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);

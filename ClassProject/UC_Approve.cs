@@ -3,6 +3,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using ClassProject.Repositories;
+using ClassProject.Services;
 using ClosedXML.Excel;
 
 namespace ClassProject
@@ -21,7 +23,8 @@ namespace ClassProject
 
             try
             {
-                Student.EnsurePendingStudentsTable();
+                PendingStudentRepository repo = new PendingStudentRepository();
+                repo.EnsureTable();
                 LoadPendingStudents();
             }
             catch (Exception ex)
@@ -85,15 +88,17 @@ namespace ClassProject
                                     errors.AppendLine($"Dòng {row}: Thiếu MSSV hoặc Họ");
                                     continue;
                                 }
+                                PendingStudentRepository repo = new PendingStudentRepository();
 
-                                if (Student.IsMssvExistsInSystem(mssv))
+                                if (repo.IsMssvExists(mssv))
                                 {
                                     skipped++;
                                     errors.AppendLine($"Dòng {row}: MSSV {mssv} đã tồn tại");
                                     continue;
                                 }
 
-                                Student.InsertPending(mssv, firstName, lastName, dob, gender, phone, address, hometown, email);
+
+                                repo.Insert(mssv, firstName, lastName, dob, gender, phone, address, hometown, email);
                                 inserted++;
                             }
                             catch (Exception ex)
@@ -146,7 +151,8 @@ namespace ClassProject
 
             try
             {
-                Student.ApprovePending(pendingId, mssv, out _);
+                StudentService repo = new StudentService();
+                repo.ApprovePending(pendingId, mssv, out _);
 
                 MessageBox.Show(
                     $"Duyệt thành công!\n\nTài khoản đã tạo:\n- Username: {mssv}\n- Password: {mssv}",
@@ -188,14 +194,16 @@ namespace ClassProject
             if (confirm != DialogResult.Yes)
                 return;
 
-            Student.RejectPending(pendingId);
+            PendingStudentRepository repo = new PendingStudentRepository();
+            repo.Reject(pendingId);
             MessageBox.Show("Đã từ chối và xóa khỏi danh sách pending.");
             LoadPendingStudents();
         }
 
         private void LoadPendingStudents()
         {
-            DataTable dt = Student.GetAllPending();
+            PendingStudentRepository repo = new PendingStudentRepository();
+            DataTable dt = repo.GetAll();
             dgvPending.DataSource = dt;
 
             if (dgvPending.Columns.Contains("PendingId"))
