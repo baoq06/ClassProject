@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duyệt Tài Khoản - Quản Lý Sinh Viên</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            padding: 30px 20px;
+            margin: 0;
+        }
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 28px 36px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .page-header h2 {
+            color: #1a2a6c;
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .page-header .subtitle {
+            color: #888;
+            font-size: 13px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1a2a6c, #2a3a8c);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26,42,108,0.4);
+        }
+        .btn-outline {
+            background: white;
+            color: #1a2a6c;
+            border: 2px solid #1a2a6c;
+        }
+        .btn-outline:hover {
+            background: #1a2a6c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26,42,108,0.2);
+        }
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #219a52;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(39,174,96,0.3);
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(231,76,60,0.3);
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 13px;
+        }
+        .btn:active { transform: translateY(0); }
+        .btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+        .table-card .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .table-card .table-title {
+            color: #1a2a6c;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .table-card .count-badge {
+            background: #1a2a6c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        thead {
+            background: #1a2a6c;
+            color: white;
+        }
+        thead th {
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        thead th:first-child { border-radius: 8px 0 0 0; }
+        thead th:last-child { border-radius: 0 8px 0 0; }
+        tbody td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #eef1f5;
+            color: #333;
+        }
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        tbody tr:hover {
+            background: #edf2f9;
+        }
+        tbody tr:last-child td:first-child {
+            border-radius: 0 0 0 8px;
+        }
+        tbody tr:last-child td:last-child {
+            border-radius: 0 0 8px 0;
+        }
+        .actions-cell {
+            display: flex;
+            gap: 6px;
+            flex-wrap: nowrap;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .empty-state p {
+            font-size: 15px;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 90%;
+            text-align: center;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+        .toast.error { background: #e74c3c; }
+        .toast.success { background: #27ae60; }
+        .toast.warning { background: #f39c12; }
+        .toast.info { background: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+
+        <div class="page-header">
+            <div>
+                <h2>DUYỆT TÀI KHOẢN SINH VIÊN</h2>
+                <p class="subtitle">Quản lý và phê duyệt tài khoản sinh viên mới đăng ký</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" id="btnUpload" onclick="triggerUpload()">
+                    <span>📄</span> Upload Excel
+                </button>
+                <button class="btn btn-outline" id="btnRefresh" onclick="loadData()">
+                    <span>🔄</span> Làm mới
+                </button>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">
+                <span class="table-title">Danh sách chờ duyệt</span>
+                <span class="count-badge" id="countBadge">0</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>MSSV</th>
+                        <th>Họ tên</th>
+                        <th>Ngày sinh</th>
+                        <th>Giới tính</th>
+                        <th>Email</th>
+                        <th>Ngày gửi</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <div class="icon">📭</div>
+                                <p>Đang tải dữ liệu...</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept=".xlsx" style="display: none;" onchange="handleFileSelect(event)">
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(function() { toast.className = 'toast ' + type; }, 3000);
+        }
+
+        function loadData() {
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'loadPending' }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function onDataLoaded(jsonData) {
+            try {
+                const data = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
+                renderTable(data);
+            } catch (e) {
+                showToast('Lỗi xử lý dữ liệu: ' + e.message, 'error');
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            const countBadge = document.getElementById('countBadge');
+
+            if (!Array.isArray(data)) {
+                data = [];
+            }
+
+            countBadge.textContent = data.length;
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">✅</div><p>Không có tài khoản nào cần duyệt</p></div></td></tr>';
+                return;
+            }
+
+            let html = '';
+            for (let i = 0; i < data.length; i++) {
+                const r = data[i];
+                const id = r.PendingId !== undefined ? r.PendingId : (r.Id !== undefined ? r.Id : i);
+                const mssv = r.MSSV || '';
+                const name = r.HoTen || r.FullName || '';
+                const dob = r.NgaySinh || r.DateOfBirth || '';
+                const gender = r.GioiTinh || r.Gender || '';
+                const email = r.Email || '';
+                const dateSent = r.NgayGui || r.DateSubmitted || '';
+
+                html += '<tr>';
+                html += '<td>' + escapeHtml(String(mssv)) + '</td>';
+                html += '<td><strong>' + escapeHtml(String(name)) + '</strong></td>';
+                html += '<td>' + escapeHtml(String(dob)) + '</td>';
+                html += '<td>' + escapeHtml(String(gender)) + '</td>';
+                html += '<td>' + escapeHtml(String(email)) + '</td>';
+                html += '<td>' + escapeHtml(String(dateSent)) + '</td>';
+                html += '<td><div class="actions-cell">';
+                html += '<button class="btn btn-success btn-sm" onclick="approveStudent(' + id + ', \'' + escapeAttr(String(mssv)) + '\')">Duyệt</button>';
+                html += '<button class="btn btn-danger btn-sm" onclick="rejectStudent(' + id + ', \'' + escapeAttr(String(mssv)) + '\')">Từ chối</button>';
+                html += '</div></td>';
+                html += '</tr>';
+            }
+
+            tbody.innerHTML = html;
+        }
+
+        function approveStudent(id, mssv) {
+            if (!confirm('Xác nhận DUYỆT tài khoản MSSV: ' + mssv + '?')) return;
+            try {
+                chrome.webview.postMessage(JSON.stringify({
+                    action: 'approveStudent',
+                    pendingId: id,
+                    mssv: mssv
+                }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function rejectStudent(id, mssv) {
+            if (!confirm('Xác nhận TỪ CHỐI tài khoản MSSV: ' + mssv + '?')) return;
+            try {
+                chrome.webview.postMessage(JSON.stringify({
+                    action: 'rejectStudent',
+                    pendingId: id
+                }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function triggerUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.endsWith('.xlsx')) {
+                showToast('Vui lòng chọn file .xlsx', 'warning');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function() {
+                const base64 = reader.result.split(',')[1];
+                try {
+                    chrome.webview.postMessage(JSON.stringify({
+                        action: 'uploadExcel',
+                        fileName: file.name,
+                        data: base64
+                    }));
+                    showToast('Đang xử lý file ' + file.name + '...', 'info');
+                } catch (e) {
+                    showToast('Lỗi gửi dữ liệu: ' + e.message, 'error');
+                }
+            };
+            reader.onerror = function() {
+                showToast('Lỗi đọc file', 'error');
+            };
+            reader.readAsDataURL(file);
+
+            event.target.value = '';
+        }
+
+        function onUploadResult(success, message) {
+            if (success) {
+                showToast(message || 'Upload thành công!', 'success');
+                loadData();
+            } else {
+                showToast(message || 'Upload thất bại', 'error');
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function escapeAttr(str) {
+            if (!str) return '';
+            return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        window.addEventListener('load', function() {
+            loadData();
+        });
+    </script>
+</body>
+</html>

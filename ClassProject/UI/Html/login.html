@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - Quản Lý Sinh Viên</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+        .login-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 40px;
+            width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .login-container h2 {
+            text-align: center;
+            color: #1a2a6c;
+            margin-bottom: 8px;
+            font-size: 24px;
+        }
+        .login-container .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 13px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26,42,108,0.1);
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        .password-wrapper input {
+            padding-right: 50px;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            padding: 8px;
+        }
+        .remember-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        .remember-row label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: #555;
+        }
+        .remember-row input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #1a2a6c;
+        }
+        .forgot-link {
+            color: #b21f1f;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #1a2a6c, #2a3a8c);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26,42,108,0.4);
+        }
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        .btn-login.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; }
+        .toast.error { background: #e74c3c; }
+        .toast.success { background: #27ae60; }
+        .toast.warning { background: #f39c12; }
+        .toast.info { background: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>ĐĂNG NHẬP</h2>
+        <p class="subtitle">Hệ thống Quản Lý Sinh Viên</p>
+
+        <div class="form-group">
+            <label for="txtUsername">Tên đăng nhập</label>
+            <input type="text" id="txtUsername" placeholder="Nhập username" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label for="txtPassword">Mật khẩu</label>
+            <div class="password-wrapper">
+                <input type="password" id="txtPassword" placeholder="Nhập mật khẩu">
+                <button class="toggle-password" onclick="togglePassword()" title="Hiện/ẩn mật khẩu">👁</button>
+            </div>
+        </div>
+
+        <div class="remember-row">
+            <label>
+                <input type="checkbox" id="chkRemember"> Ghi nhớ đăng nhập
+            </label>
+            <span class="forgot-link" onclick="forgotPassword()">Quên mật khẩu?</span>
+        </div>
+
+        <button class="btn-login" id="btnLogin" onclick="doLogin()">ĐĂNG NHẬP</button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('txtPassword');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => { toast.className = 'toast ' + type; }, 3000);
+        }
+
+        async function doLogin() {
+            const username = document.getElementById('txtUsername').value.trim();
+            const password = document.getElementById('txtPassword').value.trim();
+            const remember = document.getElementById('chkRemember').checked;
+
+            if (!username || !password) {
+                showToast('Vui lòng nhập đầy đủ Username và Password!', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('btnLogin');
+            btn.textContent = 'ĐANG ĐĂNG NHẬP...';
+            btn.classList.add('loading');
+
+            try {
+                const msg = JSON.stringify({
+                    action: 'login',
+                    username: username,
+                    password: password,
+                    remember: remember
+                });
+                chrome.webview.postMessage(msg);
+            } catch (e) {
+                btn.textContent = 'ĐĂNG NHẬP';
+                btn.classList.remove('loading');
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function forgotPassword() {
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'forgotPassword' }));
+            } catch (e) { }
+        }
+
+        function onLoginResult(success, message) {
+            const btn = document.getElementById('btnLogin');
+            btn.textContent = 'ĐĂNG NHẬP';
+            btn.classList.remove('loading');
+            if (success) {
+                showToast(message, 'success');
+            } else {
+                showToast(message, 'error');
+                document.getElementById('txtPassword').value = '';
+                document.getElementById('txtPassword').focus();
+            }
+        }
+
+        window.addEventListener('load', function() {
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'loaded' }));
+            } catch (e) { }
+        });
+    </script>
+</body>
+</html>

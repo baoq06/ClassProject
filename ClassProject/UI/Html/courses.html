@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Môn Học</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            padding: 30px 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 36px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            color: #1a2a6c;
+            margin-bottom: 6px;
+            font-size: 22px;
+            border-bottom: 3px solid #1a2a6c;
+            padding-bottom: 10px;
+        }
+        .card .subtitle {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 0;
+        }
+        .row-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #444;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .form-group label .required {
+            color: #e74c3c;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: inherit;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 72px;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26,42,108,0.08);
+        }
+        .form-group input.error-input {
+            border-color: #e74c3c;
+        }
+        .button-row {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 8px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1a2a6c, #2a3a8c);
+            color: white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26,42,108,0.3);
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: #7f8c8d;
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-danger:hover:not(:disabled) {
+            background: #c0392b;
+        }
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        .btn-warning:hover:not(:disabled) {
+            background: #d68910;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 13px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        thead {
+            background: #1a2a6c;
+            color: white;
+        }
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 14px;
+        }
+        th {
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s ease;
+        }
+        tbody tr:hover {
+            background: #f8f9ff;
+        }
+        td .actions {
+            display: flex;
+            gap: 8px;
+        }
+        .empty-row td {
+            text-align: center;
+            color: #999;
+            padding: 32px;
+            font-size: 14px;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; }
+        .toast.error { background: #e74c3c; }
+        .toast.success { background: #27ae60; }
+        .toast.warning { background: #f39c12; }
+        .toast.info { background: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="card">
+            <h2>QUẢN LÝ MÔN HỌC</h2>
+            <p class="subtitle" id="formTitle">Thêm môn học mới vào hệ thống</p>
+
+            <div class="row">
+                <div class="form-group">
+                    <label><span class="required">*</span> Mã môn học</label>
+                    <input type="text" id="txtMaMH" placeholder="VD: MATH101" style="text-transform:uppercase" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span> Tên môn học</label>
+                    <input type="text" id="txtTenMH" placeholder="Nhập tên môn học">
+                </div>
+            </div>
+
+            <div class="row row-3">
+                <div class="form-group">
+                    <label><span class="required">*</span> Số tín chỉ</label>
+                    <input type="number" id="txtSoTC" placeholder="1-10" min="1" max="10">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span> Số tuần</label>
+                    <input type="number" id="txtTuan" placeholder="VD: 15" min="1">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span> Học kỳ</label>
+                    <input type="number" id="txtHocKy" placeholder="1-3" min="1" max="3">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group full">
+                    <label>Mô tả</label>
+                    <textarea id="txtDescription" placeholder="Mô tả môn học (không bắt buộc)"></textarea>
+                </div>
+            </div>
+
+            <input type="hidden" id="editMode" value="">
+            <div class="button-row">
+                <button class="btn btn-secondary" onclick="clearForm()">🗑 Xóa form</button>
+                <button class="btn btn-primary" id="btnSubmit" onclick="doSubmit()">➕ THÊM</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>DANH SÁCH MÔN HỌC</h2>
+            <p class="subtitle" id="tableCount">Tổng số: 0 môn học</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã MH</th>
+                        <th>Tên môn học</th>
+                        <th>Số TC</th>
+                        <th>Số tuần</th>
+                        <th>Học kỳ</th>
+                        <th style="width:140px">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="courseTableBody">
+                    <tr class="empty-row">
+                        <td colspan="6">Chưa có dữ liệu môn học</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function showToast(msg, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(function () { toast.className = 'toast ' + type; }, 4000);
+        }
+
+        function loadCourses() {
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'loadCourses' }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function doSubmit() {
+            const editMode = document.getElementById('editMode').value;
+            if (editMode) {
+                updateCourse();
+            } else {
+                addCourse();
+            }
+        }
+
+        function addCourse() {
+            const mamh = document.getElementById('txtMaMH').value.trim().toUpperCase();
+            const tenmh = document.getElementById('txtTenMH').value.trim();
+            const sotc = parseInt(document.getElementById('txtSoTC').value);
+            const tuan = parseInt(document.getElementById('txtTuan').value);
+            const hocky = parseInt(document.getElementById('txtHocKy').value);
+            const description = document.getElementById('txtDescription').value.trim();
+
+            if (!mamh) { showToast('Vui lòng nhập Mã môn học!', 'warning'); return; }
+            if (!tenmh) { showToast('Vui lòng nhập Tên môn học!', 'warning'); return; }
+            if (isNaN(sotc) || sotc < 1 || sotc > 10) { showToast('Số tín chỉ phải từ 1 đến 10!', 'warning'); return; }
+            if (isNaN(tuan) || tuan < 1) { showToast('Số tuần không được để trống!', 'warning'); return; }
+            if (isNaN(hocky) || hocky < 1 || hocky > 3) { showToast('Học kỳ phải từ 1 đến 3!', 'warning'); return; }
+
+            const btn = document.getElementById('btnSubmit');
+            btn.textContent = 'ĐANG XỬ LÝ...';
+            btn.disabled = true;
+
+            try {
+                chrome.webview.postMessage(JSON.stringify({
+                    action: 'addCourse',
+                    mamh: mamh,
+                    tenmh: tenmh,
+                    sotc: sotc,
+                    tuan: tuan,
+                    hocky: hocky,
+                    description: description
+                }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+                btn.textContent = '➕ THÊM';
+                btn.disabled = false;
+            }
+        }
+
+        function editCourse(mamh) {
+            window.location.href = 'about:blank';
+            try {
+                chrome.webview.postMessage(JSON.stringify({
+                    action: 'getCourse',
+                    mamh: mamh
+                }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function fillEditForm(mamh, tenmh, sotc, tuan, hocky, description) {
+            document.getElementById('txtMaMH').value = mamh;
+            document.getElementById('txtTenMH').value = tenmh;
+            document.getElementById('txtSoTC').value = sotc;
+            document.getElementById('txtTuan').value = tuan;
+            document.getElementById('txtHocKy').value = hocky;
+            document.getElementById('txtDescription').value = description || '';
+            document.getElementById('editMode').value = mamh;
+            document.getElementById('txtMaMH').disabled = true;
+            document.getElementById('formTitle').textContent = 'Chỉnh sửa môn học ' + mamh;
+            const btn = document.getElementById('btnSubmit');
+            btn.textContent = '✏️ CẬP NHẬT';
+            btn.className = 'btn btn-warning';
+            document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateCourse() {
+            const mamh = document.getElementById('editMode').value;
+            const tenmh = document.getElementById('txtTenMH').value.trim();
+            const sotc = parseInt(document.getElementById('txtSoTC').value);
+            const tuan = parseInt(document.getElementById('txtTuan').value);
+            const hocky = parseInt(document.getElementById('txtHocKy').value);
+            const description = document.getElementById('txtDescription').value.trim();
+
+            if (!tenmh) { showToast('Vui lòng nhập Tên môn học!', 'warning'); return; }
+            if (isNaN(sotc) || sotc < 1 || sotc > 10) { showToast('Số tín chỉ phải từ 1 đến 10!', 'warning'); return; }
+            if (isNaN(tuan) || tuan < 1) { showToast('Số tuần không được để trống!', 'warning'); return; }
+            if (isNaN(hocky) || hocky < 1 || hocky > 3) { showToast('Học kỳ phải từ 1 đến 3!', 'warning'); return; }
+
+            const btn = document.getElementById('btnSubmit');
+            btn.textContent = 'ĐANG XỬ LÝ...';
+            btn.disabled = true;
+
+            try {
+                chrome.webview.postMessage(JSON.stringify({
+                    action: 'editCourse',
+                    mamh: mamh,
+                    tenmh: tenmh,
+                    sotc: sotc,
+                    tuan: tuan,
+                    hocky: hocky,
+                    description: description
+                }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+                btn.textContent = '✏️ CẬP NHẬT';
+                btn.disabled = false;
+            }
+        }
+
+        function deleteCourse(mamh) {
+            if (!confirm('Bạn có chắc chắn muốn xóa môn học ' + mamh + '?')) return;
+
+            try {
+                chrome.webview.postMessage(JSON.stringify({
+                    action: 'deleteCourse',
+                    mamh: mamh
+                }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('txtMaMH').value = '';
+            document.getElementById('txtTenMH').value = '';
+            document.getElementById('txtSoTC').value = '';
+            document.getElementById('txtTuan').value = '';
+            document.getElementById('txtHocKy').value = '';
+            document.getElementById('txtDescription').value = '';
+            document.getElementById('editMode').value = '';
+            document.getElementById('txtMaMH').disabled = false;
+            document.getElementById('formTitle').textContent = 'Thêm môn học mới vào hệ thống';
+            const btn = document.getElementById('btnSubmit');
+            btn.textContent = '➕ THÊM';
+            btn.className = 'btn btn-primary';
+            btn.disabled = false;
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('courseTableBody');
+            const countEl = document.getElementById('tableCount');
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Chưa có dữ liệu môn học</td></tr>';
+                countEl.textContent = 'Tổng số: 0 môn học';
+                return;
+            }
+
+            countEl.textContent = 'Tổng số: ' + data.length + ' môn học';
+
+            let html = '';
+            for (let i = 0; i < data.length; i++) {
+                const c = data[i];
+                html += '<tr>';
+                html += '<td><strong>' + escHtml(c.mamh || c.MaMH || '') + '</strong></td>';
+                html += '<td>' + escHtml(c.tenmh || c.TenMH || '') + '</td>';
+                html += '<td>' + (c.sotc || c.SoTC || '') + '</td>';
+                html += '<td>' + (c.tuan || c.Tuan || '') + '</td>';
+                html += '<td>' + (c.hocky || c.HocKy || '') + '</td>';
+                html += '<td><div class="actions">';
+                html += '<button class="btn btn-warning btn-sm" onclick="editCourse(\'' + escAttr(c.mamh || c.MaMH) + '\')">Sửa</button>';
+                html += '<button class="btn btn-danger btn-sm" onclick="deleteCourse(\'' + escAttr(c.mamh || c.MaMH) + '\')">Xóa</button>';
+                html += '</div></td>';
+                html += '</tr>';
+            }
+            tbody.innerHTML = html;
+        }
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function escAttr(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function onCoursesLoaded(json) {
+            if (json.success) {
+                renderTable(json.data);
+            } else {
+                showToast(json.message || 'Không thể tải danh sách môn học', 'error');
+            }
+        }
+
+        function onOperationResult(success, message) {
+            const btn = document.getElementById('btnSubmit');
+            const editMode = document.getElementById('editMode').value;
+
+            if (editMode) {
+                btn.textContent = '✏️ CẬP NHẬT';
+            } else {
+                btn.textContent = '➕ THÊM';
+            }
+            btn.disabled = false;
+
+            if (success) {
+                showToast(message, 'success');
+                if (editMode) {
+                    clearForm();
+                }
+            } else {
+                showToast(message, 'error');
+            }
+        }
+
+        function onCourseDetail(json) {
+            if (json.success && json.data) {
+                const c = json.data;
+                fillEditForm(
+                    c.mamh || c.MaMH || '',
+                    c.tenmh || c.TenMH || '',
+                    c.sotc || c.SoTC || '',
+                    c.tuan || c.Tuan || '',
+                    c.hocky || c.HocKy || '',
+                    c.description || c.Description || ''
+                );
+            } else {
+                showToast(json.message || 'Không tìm thấy môn học', 'error');
+            }
+        }
+
+        window.addEventListener('load', function () {
+            loadCourses();
+        });
+    </script>
+</body>
+</html>

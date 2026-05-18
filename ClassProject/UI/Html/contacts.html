@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Danh Bạ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 18px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .page-header h1 {
+            color: #1a2a6c;
+            font-size: 22px;
+            border-bottom: 3px solid #1a2a6c;
+            padding-bottom: 8px;
+            display: inline-block;
+        }
+        .main-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .left-panel {
+            width: 260px;
+            min-width: 260px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .left-panel h3 {
+            color: #1a2a6c;
+            font-size: 15px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .group-list {
+            list-style: none;
+            margin-bottom: 14px;
+        }
+        .group-list li {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .group-list li:hover {
+            background: #eef1f9;
+        }
+        .group-list li.active {
+            background: #1a2a6c;
+            color: white;
+            font-weight: 600;
+        }
+        .group-list li .group-count {
+            font-size: 12px;
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .group-list li.active .group-count {
+            background: rgba(255,255,255,0.25);
+        }
+        .group-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .group-actions button {
+            flex: 1;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn-add-group {
+            background: #1a2a6c;
+            color: white;
+        }
+        .btn-add-group:hover {
+            background: #15225a;
+        }
+        .btn-del-group {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-del-group:hover {
+            background: #c0392b;
+        }
+        .right-panel {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .card h3 {
+            color: #1a2a6c;
+            font-size: 15px;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 0;
+        }
+        .form-row-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        .form-row-4 {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            color: #444;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .form-group label .required {
+            color: #e74c3c;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26,42,108,0.08);
+        }
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 4px;
+            padding-top: 14px;
+            border-top: 1px solid #eee;
+        }
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1a2a6c, #2a3a8c);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26,42,108,0.3);
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        table th {
+            background: #1a2a6c;
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        table th:first-child { border-radius: 6px 0 0 0; }
+        table th:last-child { border-radius: 0 6px 0 0; }
+        table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+        table tbody tr:hover {
+            background: #eef1f9;
+        }
+        .action-btns {
+            display: flex;
+            gap: 6px;
+        }
+        .action-btns button {
+            padding: 4px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn-edit-sm {
+            background: #3498db;
+            color: white;
+        }
+        .btn-edit-sm:hover {
+            background: #2980b9;
+        }
+        .btn-del-sm {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-del-sm:hover {
+            background: #c0392b;
+        }
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+            font-size: 14px;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; }
+        .toast.error { background: #e74c3c; }
+        .toast.success { background: #27ae60; }
+        .toast.warning { background: #f39c12; }
+        .toast.info { background: #3498db; }
+        .selected-group-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        .selected-group-label strong {
+            color: #1a2a6c;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>QUẢN LÝ DANH BẠ</h1>
+    </div>
+
+    <div class="main-layout">
+        <div class="left-panel">
+            <h3>NHÓM DANH BẠ</h3>
+            <ul class="group-list" id="groupList">
+                <li class="empty-state">Đang tải...</li>
+            </ul>
+            <div class="group-actions">
+                <button class="btn-add-group" onclick="addGroup()">+ Thêm nhóm</button>
+                <button class="btn-del-group" onclick="deleteGroup(currentGroupId)">Xóa nhóm</button>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="card" id="contactTableCard">
+                <h3>DANH SÁCH LIÊN HỆ</h3>
+                <div class="selected-group-label" id="selectedGroupLabel"></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Họ</th>
+                            <th>Tên</th>
+                            <th>Ngày sinh</th>
+                            <th>Giới tính</th>
+                            <th>SĐT</th>
+                            <th>Địa chỉ</th>
+                            <th>Email</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactTableBody">
+                        <tr><td colspan="8" class="empty-state">Chưa có dữ liệu</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card" id="contactFormCard">
+                <h3 id="formTitle">THÊM LIÊN HỆ MỚI</h3>
+                <div class="form-group" style="display:none">
+                    <input type="hidden" id="editContactId">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><span class="required">*</span> Họ và tên đệm</label>
+                        <input type="text" id="txtLName" placeholder="Nguyễn Văn">
+                    </div>
+                    <div class="form-group">
+                        <label><span class="required">*</span> Tên</label>
+                        <input type="text" id="txtFName" placeholder="An">
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày sinh</label>
+                        <input type="date" id="dtpDob">
+                    </div>
+                </div>
+                <div class="form-row form-row-4">
+                    <div class="form-group">
+                        <label>Giới tính</label>
+                        <select id="cboGender">
+                            <option value="">-- Chọn --</option>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <input type="text" id="txtPhone" placeholder="0901234567">
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ</label>
+                        <input type="text" id="txtAddress" placeholder="Số nhà, đường, phường/xã">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="txtEmail" placeholder="example@email.com">
+                    </div>
+                </div>
+                <div class="form-buttons">
+                    <button class="btn btn-secondary" onclick="cancelForm()">Hủy</button>
+                    <button class="btn btn-primary" id="btnSave" onclick="saveContact()">💾 LƯU</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentGroupId = 0;
+        let editingContactId = null;
+        let groupsData = [];
+        let contactsData = [];
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => { toast.className = 'toast ' + type; }, 4000);
+        }
+
+        function postMessage(obj) {
+            try {
+                chrome.webview.postMessage(JSON.stringify(obj));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function loadGroups() {
+            postMessage({ action: 'loadGroups' });
+        }
+
+        function addGroup() {
+            const name = prompt('Nhập tên nhóm mới:');
+            if (!name || !name.trim()) return;
+            postMessage({ action: 'addGroup', groupName: name.trim() });
+        }
+
+        function deleteGroup(id) {
+            if (id === 0) {
+                showToast('Không thể xóa nhóm "Tất cả"!', 'warning');
+                return;
+            }
+            const group = groupsData.find(g => g.Id === id);
+            const label = group ? group.Name : 'nhóm này';
+            if (!confirm('Bạn có chắc muốn xóa nhóm "' + label + '"?')) return;
+            postMessage({ action: 'deleteGroup', id: id });
+        }
+
+        function selectGroup(id) {
+            currentGroupId = id;
+            const items = document.querySelectorAll('#groupList li');
+            items.forEach(li => {
+                const liId = parseInt(li.getAttribute('data-id'));
+                li.classList.toggle('active', liId === id);
+            });
+            const group = groupsData.find(g => g.Id === id);
+            const label = document.getElementById('selectedGroupLabel');
+            if (group) {
+                label.innerHTML = 'Đang xem nhóm: <strong>' + group.Name + '</strong>';
+            } else if (id === 0) {
+                label.innerHTML = 'Đang xem: <strong>Tất cả liên hệ</strong>';
+            } else {
+                label.innerHTML = '';
+            }
+            postMessage({ action: 'loadContacts', groupId: id });
+        }
+
+        function loadContacts() {
+            postMessage({ action: 'loadContacts', groupId: currentGroupId });
+        }
+
+        function addContact() {
+            const fname = document.getElementById('txtFName').value.trim();
+            const lname = document.getElementById('txtLName').value.trim();
+            const dob = document.getElementById('dtpDob').value;
+            const gender = document.getElementById('cboGender').value;
+            const phone = document.getElementById('txtPhone').value.trim();
+            const address = document.getElementById('txtAddress').value.trim();
+            const email = document.getElementById('txtEmail').value.trim();
+
+            if (!fname || !lname) {
+                showToast('Họ và Tên không được để trống!', 'warning');
+                return;
+            }
+
+            postMessage({
+                action: 'addContact',
+                fname: fname,
+                lname: lname,
+                dob: dob || null,
+                gender: gender,
+                groupId: currentGroupId,
+                phone: phone,
+                address: address,
+                email: email
+            });
+        }
+
+        function editContact(id) {
+            postMessage({ action: 'getContact', id: id });
+        }
+
+        function updateContact() {
+            const id = editingContactId;
+            const fname = document.getElementById('txtFName').value.trim();
+            const lname = document.getElementById('txtLName').value.trim();
+            const dob = document.getElementById('dtpDob').value;
+            const gender = document.getElementById('cboGender').value;
+            const phone = document.getElementById('txtPhone').value.trim();
+            const address = document.getElementById('txtAddress').value.trim();
+            const email = document.getElementById('txtEmail').value.trim();
+
+            if (!fname || !lname) {
+                showToast('Họ và Tên không được để trống!', 'warning');
+                return;
+            }
+
+            postMessage({
+                action: 'editContact',
+                id: id,
+                fname: fname,
+                lname: lname,
+                dob: dob || null,
+                gender: gender,
+                groupId: currentGroupId,
+                phone: phone,
+                address: address,
+                email: email
+            });
+        }
+
+        function deleteContact(id) {
+            if (!confirm('Bạn có chắc muốn xóa liên hệ này?')) return;
+            postMessage({ action: 'deleteContact', id: id });
+        }
+
+        function saveContact() {
+            if (editingContactId !== null) {
+                updateContact();
+            } else {
+                addContact();
+            }
+        }
+
+        function cancelForm() {
+            editingContactId = null;
+            document.getElementById('editContactId').value = '';
+            document.getElementById('formTitle').textContent = 'THÊM LIÊN HỆ MỚI';
+            document.getElementById('btnSave').textContent = '💾 LƯU';
+            clearContactFields();
+        }
+
+        function clearContactFields() {
+            document.getElementById('txtLName').value = '';
+            document.getElementById('txtFName').value = '';
+            document.getElementById('dtpDob').value = '';
+            document.getElementById('cboGender').value = '';
+            document.getElementById('txtPhone').value = '';
+            document.getElementById('txtAddress').value = '';
+            document.getElementById('txtEmail').value = '';
+        }
+
+        function renderTable(data) {
+            contactsData = data || [];
+            const tbody = document.getElementById('contactTableBody');
+            if (!contactsData || contactsData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Chưa có dữ liệu</td></tr>';
+                return;
+            }
+            tbody.innerHTML = contactsData.map(c => {
+                const dob = c.Dob ? new Date(c.Dob).toLocaleDateString('vi-VN') : '';
+                return '<tr>' +
+                    '<td>' + escapeHtml(c.Lname || '') + '</td>' +
+                    '<td>' + escapeHtml(c.Fname || '') + '</td>' +
+                    '<td>' + dob + '</td>' +
+                    '<td>' + escapeHtml(c.Gender || '') + '</td>' +
+                    '<td>' + escapeHtml(c.Phone || '') + '</td>' +
+                    '<td>' + escapeHtml(c.Address || '') + '</td>' +
+                    '<td>' + escapeHtml(c.Email || '') + '</td>' +
+                    '<td><div class="action-btns">' +
+                        '<button class="btn-edit-sm" onclick="editContact(' + c.Id + ')">Sửa</button>' +
+                        '<button class="btn-del-sm" onclick="deleteContact(' + c.Id + ')">Xóa</button>' +
+                    '</div></td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        function renderGroupList(data) {
+            groupsData = data || [];
+            const ul = document.getElementById('groupList');
+            let html = '<li data-id="0" class="' + (currentGroupId === 0 ? 'active' : '') + '" onclick="selectGroup(0)">' +
+                'Tất cả liên hệ <span class="group-count" id="countAll"></span></li>';
+
+            if (groupsData && groupsData.length > 0) {
+                groupsData.forEach(g => {
+                    html += '<li data-id="' + g.Id + '" class="' + (currentGroupId === g.Id ? 'active' : '') + '" onclick="selectGroup(' + g.Id + ')">' +
+                        escapeHtml(g.Name) + ' <span class="group-count" id="count_' + g.Id + '"></span></li>';
+                });
+            }
+
+            ul.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function onGroupsLoaded(json) {
+            renderGroupList(json);
+        }
+
+        function onContactsLoaded(json) {
+            renderTable(json);
+        }
+
+        function onContactLoaded(json) {
+            if (!json) return;
+            editingContactId = json.Id;
+            document.getElementById('editContactId').value = json.Id;
+            document.getElementById('formTitle').textContent = 'SỬA LIÊN HỆ';
+            document.getElementById('btnSave').textContent = '💾 CẬP NHẬT';
+            document.getElementById('txtLName').value = json.Lname || '';
+            document.getElementById('txtFName').value = json.Fname || '';
+            document.getElementById('dtpDob').value = json.Dob ? json.Dob.split('T')[0] : '';
+            document.getElementById('cboGender').value = json.Gender || '';
+            document.getElementById('txtPhone').value = json.Phone || '';
+            document.getElementById('txtAddress').value = json.Address || '';
+            document.getElementById('txtEmail').value = json.Email || '';
+        }
+
+        function onOperationResult(success, message) {
+            if (success) {
+                showToast(message, 'success');
+                cancelForm();
+                loadGroups();
+                loadContacts();
+            } else {
+                showToast(message, 'error');
+            }
+        }
+
+        function onAddResult(success, message) {
+            onOperationResult(success, message);
+        }
+
+        function onEditResult(success, message) {
+            onOperationResult(success, message);
+        }
+
+        function onDeleteResult(success, message) {
+            onOperationResult(success, message);
+        }
+
+        window.addEventListener('load', function() {
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'loaded' }));
+            } catch (e) { }
+            loadGroups();
+            selectGroup(0);
+        });
+    </script>
+</body>
+</html>

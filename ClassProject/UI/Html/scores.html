@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Điểm - Hệ Thống</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            padding: 30px 20px;
+            margin: 0;
+        }
+        .page-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .page-container h2 {
+            color: #1a2a6c;
+            margin-bottom: 6px;
+            font-size: 22px;
+            border-bottom: 3px solid #1a2a6c;
+            padding-bottom: 10px;
+        }
+        .page-container .subtitle {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+        .card h3 {
+            color: #1a2a6c;
+            font-size: 17px;
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #444;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .form-group select, .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: inherit;
+            background: #fff;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26,42,108,0.08);
+        }
+        .form-group input[readonly] {
+            background: #f5f6fa;
+            color: #666;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 36px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-row-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1a2a6c, #2a3a8c);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26,42,108,0.3);
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 8px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table thead th {
+            background: #1a2a6c;
+            color: white;
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        table tbody td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+        table tbody tr:hover {
+            background: #f8faff;
+        }
+        table tbody tr.selected {
+            background: #e8ecf8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; }
+        .toast.error { background: #e74c3c; }
+        .toast.success { background: #27ae60; }
+        .toast.warning { background: #f39c12; }
+        .toast.info { background: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <h2>QUẢN LÝ ĐIỂM</h2>
+        <p class="subtitle">Nhập và quản lý điểm sinh viên theo môn học</p>
+
+        <div class="card">
+            <h3>Bộ lọc</h3>
+            <div class="filter-row">
+                <div class="form-group">
+                    <label>Chọn môn học</label>
+                    <select id="cboCourse" onchange="onCourseChange()">
+                        <option value="">-- Chọn môn học --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Chọn sinh viên</label>
+                    <select id="cboStudent" onchange="onStudentChange()">
+                        <option value="">-- Chọn sinh viên --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Thông tin điểm</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>MSSV</label>
+                    <input type="text" id="txtMSSV" readonly placeholder="--">
+                </div>
+                <div class="form-group">
+                    <label>Mã môn học</label>
+                    <input type="text" id="txtMaMH" readonly placeholder="--">
+                </div>
+            </div>
+            <div class="form-row form-row-3">
+                <div class="form-group">
+                    <label>Điểm quá trình (0-10)</label>
+                    <input type="number" id="txtDiemQT" placeholder="0" min="0" max="10" step="0.01" oninput="calculateDiemtk()">
+                </div>
+                <div class="form-group">
+                    <label>Điểm cuối kỳ (0-10)</label>
+                    <input type="number" id="txtDiemCK" placeholder="0" min="0" max="10" step="0.01" oninput="calculateDiemtk()">
+                </div>
+                <div class="form-group">
+                    <label>Điểm tổng kết</label>
+                    <input type="number" id="txtDiemTK" readonly placeholder="Tự tính" step="0.01">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Ghi chú</label>
+                <input type="text" id="txtNote" placeholder="Ghi chú (nếu có)">
+            </div>
+            <div class="button-row">
+                <button class="btn btn-primary" onclick="saveScore()">💾 Lưu điểm</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Danh sách điểm</h3>
+            <div class="table-wrapper">
+                <table id="tblScores">
+                    <thead>
+                        <tr>
+                            <th>MSSV</th>
+                            <th>Tên sinh viên</th>
+                            <th>Mã MH</th>
+                            <th>Tên môn học</th>
+                            <th>Điểm QT</th>
+                            <th>Điểm CK</th>
+                            <th>Điểm TK</th>
+                            <th>Ghi chú</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblScoresBody">
+                        <tr>
+                            <td colspan="9" class="empty-state">Chọn môn học hoặc sinh viên để xem danh sách điểm</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const _C = {
+            storecourses: [],
+            s_students: [],
+            scores: [],
+            selectedMssv: '',
+            selectedMamh: ''
+        };
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => { toast.className = 'toast ' + type; }, 4000);
+        }
+
+        function calculateDiemtk() {
+            const qt = parseFloat(document.getElementById('txtDiemQT').value) || 0;
+            const ck = parseFloat(document.getElementById('txtDiemCK').value) || 0;
+            const tk = qt * 0.4 + ck * 0.6;
+            document.getElementById('txtDiemTK').value = Math.round(tk * 100) / 100;
+        }
+
+        function loadCourses() {
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'loadCourses' }));
+            } catch (e) {
+                showToast('Lỗi tải danh sách môn học: ' + e.message, 'error');
+            }
+        }
+
+        function loadStudents() {
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'loadStudents' }));
+            } catch (e) {
+                showToast('Lỗi tải danh sách sinh viên: ' + e.message, 'error');
+            }
+        }
+
+        function onCourseChange() {
+            const mamh = document.getElementById('cboCourse').value;
+            _C.selectedMamh = mamh;
+            _C.selectedMssv = '';
+            document.getElementById('cboStudent').value = '';
+            document.getElementById('txtMSSV').value = '';
+            document.getElementById('txtMaMH').value = mamh;
+            document.getElementById('txtDiemQT').value = '';
+            document.getElementById('txtDiemCK').value = '';
+            document.getElementById('txtDiemTK').value = '';
+            document.getElementById('txtNote').value = '';
+
+            if (!mamh) {
+                document.getElementById('tblScoresBody').innerHTML =
+                    '<tr><td colspan="9" class="empty-state">Chọn môn học hoặc sinh viên để xem danh sách điểm</td></tr>';
+                return;
+            }
+
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'loadScoresByCourse', mamh: mamh }));
+            } catch (e) {
+                showToast('Lỗi tải điểm: ' + e.message, 'error');
+            }
+        }
+
+        function onStudentChange() {
+            const mssv = document.getElementById('cboStudent').value;
+            _C.selectedMssv = mssv;
+            _C.selectedMamh = '';
+            document.getElementById('cboCourse').value = '';
+            document.getElementById('txtMSSV').value = mssv;
+            document.getElementById('txtMaMH').value = '';
+            document.getElementById('txtDiemQT').value = '';
+            document.getElementById('txtDiemCK').value = '';
+            document.getElementById('txtDiemTK').value = '';
+            document.getElementById('txtNote').value = '';
+
+            if (!mssv) {
+                document.getElementById('tblScoresBody').innerHTML =
+                    '<tr><td colspan="9" class="empty-state">Chọn môn học hoặc sinh viên để xem danh sách điểm</td></tr>';
+                return;
+            }
+
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'loadScoresByStudent', mssv: mssv }));
+            } catch (e) {
+                showToast('Lỗi tải điểm: ' + e.message, 'error');
+            }
+        }
+
+        function saveScore() {
+            const mssv = document.getElementById('txtMSSV').value.trim();
+            const mamh = document.getElementById('txtMaMH').value.trim();
+            const diemqt = parseFloat(document.getElementById('txtDiemQT').value);
+            const diemck = parseFloat(document.getElementById('txtDiemCK').value);
+            const mota = document.getElementById('txtNote').value.trim();
+
+            if (!mssv || !mamh) {
+                showToast('Vui lòng chọn sinh viên và môn học!', 'warning');
+                return;
+            }
+
+            if (isNaN(diemqt) || diemqt < 0 || diemqt > 10) {
+                showToast('Điểm quá trình phải từ 0 đến 10!', 'warning');
+                return;
+            }
+
+            if (isNaN(diemck) || diemck < 0 || diemck > 10) {
+                showToast('Điểm cuối kỳ phải từ 0 đến 10!', 'warning');
+                return;
+            }
+
+            try {
+                chrome.webview.postMessage(JSON.stringify({
+                    action: 'addScore',
+                    mssv: mssv,
+                    mamh: mamh,
+                    diemqt: diemqt,
+                    diemck: diemck,
+                    mota: mota
+                }));
+            } catch (e) {
+                showToast('Lỗi lưu điểm: ' + e.message, 'error');
+            }
+        }
+
+        function deleteScore(mssv, mamh) {
+            if (!confirm('Bạn có chắc muốn xóa điểm của sinh viên ' + mssv + ' môn ' + mamh + '?')) return;
+
+            try {
+                chrome.webview.postMessage(JSON.stringify({
+                    action: 'deleteScore',
+                    mssv: mssv,
+                    mamh: mamh
+                }));
+            } catch (e) {
+                showToast('Lỗi xóa điểm: ' + e.message, 'error');
+            }
+        }
+
+        function fillRow(mssv, mamh) {
+            const score = _C.scores.find(s => s.mssv === mssv && s.mamh === mamh);
+            document.getElementById('txtMSSV').value = mssv;
+            document.getElementById('txtMaMH').value = mamh;
+            if (score) {
+                document.getElementById('txtDiemQT').value = score.diemqt ?? '';
+                document.getElementById('txtDiemCK').value = score.diemck ?? '';
+                document.getElementById('txtNote').value = score.mota || '';
+                calculateDiemtk();
+            } else {
+                document.getElementById('txtDiemQT').value = '';
+                document.getElementById('txtDiemCK').value = '';
+                document.getElementById('txtDiemTK').value = '';
+                document.getElementById('txtNote').value = '';
+            }
+        }
+
+        function renderTable(data) {
+            _C.scores = data || [];
+            const tbody = document.getElementById('tblScoresBody');
+
+            if (!_C.scores.length) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Không có dữ liệu điểm</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = _C.scores.map(s => {
+                const tenSV = _C.s_students.find(st => st.mssv === s.mssv);
+                const tenMH = _C.storecourses.find(c => c.mamh === s.mamh);
+                return `<tr onclick="fillRow('${s.mssv}','${s.mamh}')" style="cursor:pointer" title="Click để chọn">
+                    <td>${s.mssv}</td>
+                    <td>${tenSV ? tenSV.hoten || tenSV.lastName || '' : ''}</td>
+                    <td>${s.mamh}</td>
+                    <td>${tenMH ? tenMH.tenmh || '' : ''}</td>
+                    <td>${s.diemqt ?? ''}</td>
+                    <td>${s.diemck ?? ''}</td>
+                    <td>${s.diemtk != null ? s.diemtk : ''}</td>
+                    <td>${s.mota || ''}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteScore('${s.mssv}','${s.mamh}')">Xóa</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function onScoresLoaded(json) {
+            renderTable(json);
+        }
+
+        function onOperationResult(success, message) {
+            showToast(message, success ? 'success' : 'error');
+            if (success) {
+                if (_C.selectedMamh) {
+                    onCourseChange();
+                } else if (_C.selectedMssv) {
+                    onStudentChange();
+                }
+            }
+        }
+
+        function onCoursesLoaded(json) {
+            _C.storecourses = json || [];
+            const cbo = document.getElementById('cboCourse');
+            cbo.innerHTML = '<option value="">-- Chọn môn học --</option>' +
+                _C.storecourses.map(c => `<option value="${c.mamh}">${c.mamh} - ${c.tenmh || ''}</option>`).join('');
+        }
+
+        function onStudentsLoaded(json) {
+            _C.s_students = json || [];
+            const cbo = document.getElementById('cboStudent');
+            cbo.innerHTML = '<option value="">-- Chọn sinh viên --</option>' +
+                _C.s_students.map(s => {
+                    const name = s.hoten || s.lastName || s.mssv;
+                    return `<option value="${s.mssv}">${s.mssv} - ${name}</option>`;
+                }).join('');
+        }
+
+        window.addEventListener('load', function () {
+            loadCourses();
+            loadStudents();
+        });
+    </script>
+</body>
+</html>

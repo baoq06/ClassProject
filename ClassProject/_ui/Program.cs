@@ -1,3 +1,5 @@
+using ClassProject.Forms;
+
 namespace ClassProject
 {
     internal static class Program

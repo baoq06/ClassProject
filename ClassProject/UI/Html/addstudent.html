@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Sinh Viên - Quản Lý Sinh Viên</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 20px;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 36px;
+            width: 800px;
+            max-width: 100%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .form-container h2 {
+            color: #1a2a6c;
+            margin-bottom: 6px;
+            font-size: 22px;
+            border-bottom: 3px solid #1a2a6c;
+            padding-bottom: 10px;
+        }
+        .form-container .subtitle {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 0;
+        }
+        .row-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #444;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .form-group label .required {
+            color: #e74c3c;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26,42,108,0.08);
+        }
+        .form-group input.error-input {
+            border-color: #e74c3c;
+        }
+        .image-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .image-preview {
+            width: 120px;
+            height: 140px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #fafafa;
+            flex-shrink: 0;
+        }
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .image-preview .placeholder {
+            color: #ccc;
+            font-size: 12px;
+            text-align: center;
+            padding: 10px;
+        }
+        .btn-choose-img {
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-choose-img:hover {
+            background: #2980b9;
+        }
+        .button-row {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 8px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1a2a6c, #2a3a8c);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26,42,108,0.3);
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; }
+        .toast.error { background: #e74c3c; }
+        .toast.success { background: #27ae60; }
+        .toast.warning { background: #f39c12; }
+        .toast.info { background: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>THÊM SINH VIÊN MỚI</h2>
+        <p class="subtitle">Nhập thông tin sinh viên vào hệ thống</p>
+
+        <div class="row">
+            <div class="form-group">
+                <label><span class="required">*</span> MSSV</label>
+                <input type="text" id="txtMSSV" placeholder="Mã số sinh viên">
+            </div>
+            <div class="form-group">
+                <label><span class="required">*</span> Họ và tên đệm</label>
+                <input type="text" id="txtLastName" placeholder="Nguyễn Văn">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Tên</label>
+                <input type="text" id="txtFirstName" placeholder="An">
+            </div>
+            <div class="form-group">
+                <label>Ngày sinh</label>
+                <input type="date" id="dtpDateOfBirth">
+            </div>
+        </div>
+
+        <div class="row row-3">
+            <div class="form-group">
+                <label>Giới tính</label>
+                <select id="cboGender">
+                    <option value="">-- Chọn --</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="text" id="txtPhone" placeholder="0901234567">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="txtEmail" placeholder="example@email.com">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Địa chỉ</label>
+                <input type="text" id="txtAddress" placeholder="Số nhà, đường, phường/xã">
+            </div>
+            <div class="form-group">
+                <label>Quê quán</label>
+                <input type="text" id="txtHometown" placeholder="Tỉnh/Thành phố">
+            </div>
+        </div>
+
+        <div class="image-section">
+            <div class="image-preview" id="imagePreview">
+                <span class="placeholder" id="placeholderText">Chưa có ảnh</span>
+                <img id="previewImg" style="display:none" alt="Preview">
+            </div>
+            <div>
+                <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
+                <button class="btn-choose-img" onclick="document.getElementById('fileInput').click()">📷 Chọn ảnh đại diện</button>
+            </div>
+        </div>
+
+        <div class="button-row">
+            <button class="btn btn-secondary" onclick="clearForm()">🗑 Xóa form</button>
+            <button class="btn btn-primary" id="btnSave" onclick="doAddStudent()">💾 THÊM SINH VIÊN</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let studentImageBase64 = null;
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => { toast.className = 'toast ' + type; }, 4000);
+        }
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showToast('Vui lòng chọn file ảnh (jpg, png)!', 'warning');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Ảnh không được vượt quá 5MB!', 'warning');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                studentImageBase64 = e.target.result;
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('previewImg').style.display = 'block';
+                document.getElementById('placeholderText').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function doAddStudent() {
+            const mssv = document.getElementById('txtMSSV').value.trim();
+            const lastName = document.getElementById('txtLastName').value.trim();
+            const firstName = document.getElementById('txtFirstName').value.trim();
+            const dob = document.getElementById('dtpDateOfBirth').value;
+            const gender = document.getElementById('cboGender').value;
+            const phone = document.getElementById('txtPhone').value.trim();
+            const address = document.getElementById('txtAddress').value.trim();
+            const hometown = document.getElementById('txtHometown').value.trim();
+            const email = document.getElementById('txtEmail').value.trim();
+
+            if (!mssv || !lastName) {
+                showToast('MSSV và Họ không được để trống!', 'warning');
+                return;
+            }
+
+            if (gender && gender !== 'Nam' && gender !== 'Nữ') {
+                showToast('Vui lòng chọn giới tính Nam hoặc Nữ!', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('btnSave');
+            btn.textContent = 'ĐANG XỬ LÝ...';
+            btn.disabled = true;
+
+            const msg = JSON.stringify({
+                action: 'addStudent',
+                mssv: mssv,
+                firstName: firstName || lastName,
+                lastName: lastName,
+                dateOfBirth: dob || null,
+                gender: gender,
+                phone: phone,
+                address: address,
+                hometown: hometown,
+                email: email,
+                pictureBase64: studentImageBase64
+            });
+
+            try {
+                chrome.webview.postMessage(msg);
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+                btn.textContent = '💾 THÊM SINH VIÊN';
+                btn.disabled = false;
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('txtMSSV').value = '';
+            document.getElementById('txtLastName').value = '';
+            document.getElementById('txtFirstName').value = '';
+            document.getElementById('dtpDateOfBirth').value = '';
+            document.getElementById('cboGender').value = '';
+            document.getElementById('txtPhone').value = '';
+            document.getElementById('txtAddress').value = '';
+            document.getElementById('txtHometown').value = '';
+            document.getElementById('txtEmail').value = '';
+            document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('placeholderText').style.display = 'block';
+            document.getElementById('fileInput').value = '';
+            studentImageBase64 = null;
+        }
+
+        function onAddResult(success, message) {
+            const btn = document.getElementById('btnSave');
+            btn.textContent = '💾 THÊM SINH VIÊN';
+            btn.disabled = false;
+
+            if (success) {
+                showToast(message, 'success');
+                clearForm();
+            } else {
+                showToast(message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Sinh Viên - Quản Lý Sinh Viên</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 20px;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 36px;
+            width: 1200px;
+            max-width: 100%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .container h2 {
+            color: #1a2a6c;
+            margin-bottom: 6px;
+            font-size: 22px;
+            border-bottom: 3px solid #1a2a6c;
+            padding-bottom: 10px;
+        }
+        .container .subtitle {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .search-row input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .search-row input:focus {
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26,42,108,0.08);
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1a2a6c, #2a3a8c);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26,42,108,0.3);
+        }
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #219a52;
+        }
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table thead {
+            background: #1a2a6c;
+            color: white;
+        }
+        table thead th {
+            padding: 12px 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: left;
+            white-space: nowrap;
+        }
+        table tbody td {
+            padding: 10px;
+            font-size: 13px;
+            border-bottom: 1px solid #eee;
+            color: #444;
+        }
+        table tbody tr:hover {
+            background: #f8faff;
+        }
+        table tbody td.actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: nowrap;
+        }
+        .empty-state {
+            text-align: center;
+            color: #aaa;
+            padding: 40px;
+            font-size: 14px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 700px;
+            max-width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+        }
+        .modal h3 {
+            color: #1a2a6c;
+            margin-bottom: 6px;
+            font-size: 18px;
+            border-bottom: 2px solid #1a2a6c;
+            padding-bottom: 8px;
+        }
+        .modal .modal-subtitle {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-row-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #444;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26,42,108,0.08);
+        }
+        .form-group input[readonly] {
+            background: #f5f5f5;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 8px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+
+        .confirm-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .confirm-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .confirm-box {
+            background: white;
+            border-radius: 12px;
+            padding: 28px 32px;
+            width: 420px;
+            max-width: 95%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+        }
+        .confirm-box .icon-warn {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .confirm-box p {
+            color: #555;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+        .confirm-box .mssv-highlight {
+            font-weight: 700;
+            color: #1a2a6c;
+        }
+        .confirm-box .btn-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 18px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; }
+        .toast.error { background: #e74c3c; }
+        .toast.success { background: #27ae60; }
+        .toast.warning { background: #f39c12; }
+        .toast.info { background: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>DANH SÁCH SINH VIÊN</h2>
+        <p class="subtitle">Tìm kiếm, chỉnh sửa và quản lý thông tin sinh viên</p>
+
+        <div class="search-row">
+            <input type="text" id="txtSearch" placeholder="Tìm theo MSSV, họ tên hoặc email..." onkeydown="if(event.key==='Enter')searchStudents()">
+            <button class="btn btn-primary" onclick="searchStudents()">🔍 Tìm kiếm</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>MSSV</th>
+                        <th>Họ tên</th>
+                        <th>Ngày sinh</th>
+                        <th>Giới tính</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="7" class="empty-state">Đang tải dữ liệu...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="overlay" id="editOverlay">
+        <div class="modal">
+            <h3>CHỈNH SỬA SINH VIÊN</h3>
+            <p class="modal-subtitle">Cập nhật thông tin sinh viên</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>MSSV</label>
+                    <input type="text" id="editMSSV" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Họ và tên đệm</label>
+                    <input type="text" id="editLastName" placeholder="Nguyễn Văn">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tên</label>
+                    <input type="text" id="editFirstName" placeholder="An">
+                </div>
+                <div class="form-group">
+                    <label>Ngày sinh</label>
+                    <input type="date" id="editDateOfBirth">
+                </div>
+            </div>
+            <div class="form-row form-row-3">
+                <div class="form-group">
+                    <label>Giới tính</label>
+                    <select id="editGender">
+                        <option value="">-- Chọn --</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" id="editPhone" placeholder="0901234567">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="editEmail" placeholder="example@email.com">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Địa chỉ</label>
+                    <input type="text" id="editAddress" placeholder="Số nhà, đường, phường/xã">
+                </div>
+                <div class="form-group">
+                    <label>Quê quán</label>
+                    <input type="text" id="editHometown" placeholder="Tỉnh/Thành phố">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeEdit()">Hủy</button>
+                <button class="btn btn-success" id="btnSaveEdit" onclick="saveEdit()">💾 Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-box">
+            <div class="icon-warn">⚠️</div>
+            <p>Bạn có chắc chắn muốn xóa sinh viên:</p>
+            <p><span class="mssv-highlight" id="confirmMSSV"></span></p>
+            <p style="font-size:13px;color:#888;">Hành động này không thể hoàn tác.</p>
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="closeConfirm()">Hủy</button>
+                <button class="btn btn-danger" id="btnConfirmDelete">🗑 Xóa</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let editStudentId = null;
+        let confirmStudentId = null;
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => { toast.className = 'toast ' + type; }, 4000);
+        }
+
+        function loadStudents() {
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'searchStudents', keyword: '' }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function searchStudents() {
+            const keyword = document.getElementById('txtSearch').value.trim();
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'searchStudents', keyword: keyword }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function editStudent(id) {
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'getStudent', id: id }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function saveEdit() {
+            const mssv = document.getElementById('editMSSV').value.trim();
+            const lastName = document.getElementById('editLastName').value.trim();
+            const firstName = document.getElementById('editFirstName').value.trim();
+            const dob = document.getElementById('editDateOfBirth').value;
+            const gender = document.getElementById('editGender').value;
+            const phone = document.getElementById('editPhone').value.trim();
+            const address = document.getElementById('editAddress').value.trim();
+            const hometown = document.getElementById('editHometown').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+
+            if (!mssv || !lastName) {
+                showToast('MSSV và Họ không được để trống!', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('btnSaveEdit');
+            btn.textContent = 'ĐANG LƯU...';
+            btn.disabled = true;
+
+            try {
+                chrome.webview.postMessage(JSON.stringify({
+                    action: 'editStudent',
+                    id: editStudentId,
+                    mssv: mssv,
+                    firstName: firstName,
+                    lastName: lastName,
+                    dateOfBirth: dob || null,
+                    gender: gender,
+                    phone: phone,
+                    address: address,
+                    hometown: hometown,
+                    email: email
+                }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+                btn.textContent = '💾 Lưu thay đổi';
+                btn.disabled = false;
+            }
+        }
+
+        function deleteStudent(id, mssv) {
+            confirmStudentId = id;
+            document.getElementById('confirmMSSV').textContent = mssv;
+            document.getElementById('confirmOverlay').classList.add('show');
+            document.getElementById('btnConfirmDelete').onclick = function() {
+                closeConfirm();
+                try {
+                    chrome.webview.postMessage(JSON.stringify({ action: 'deleteStudent', id: id }));
+                } catch (e) {
+                    showToast('Lỗi kết nối: ' + e.message, 'error');
+                }
+            };
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmOverlay').classList.remove('show');
+            confirmStudentId = null;
+        }
+
+        function closeEdit() {
+            document.getElementById('editOverlay').classList.remove('show');
+            editStudentId = null;
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Không tìm thấy sinh viên nào.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            data.forEach(function(s) {
+                html += '<tr>';
+                html += '<td>' + escapeHtml(s.mssv) + '</td>';
+                html += '<td>' + escapeHtml(s.fullName || (s.lastName + ' ' + s.firstName)) + '</td>';
+                html += '<td>' + escapeHtml(formatDate(s.dateOfBirth)) + '</td>';
+                html += '<td>' + escapeHtml(s.gender || '') + '</td>';
+                html += '<td>' + escapeHtml(s.phone || '') + '</td>';
+                html += '<td>' + escapeHtml(s.email || '') + '</td>';
+                html += '<td class="actions">';
+                html += '<button class="btn btn-warning btn-sm" onclick="editStudent(' + s.id + ')">✏️ Sửa</button>';
+                html += '<button class="btn btn-danger btn-sm" onclick="deleteStudent(' + s.id + ',\'' + escapeJs(s.mssv) + '\')">🗑 Xóa</button>';
+                html += '</td>';
+                html += '</tr>';
+            });
+            tbody.innerHTML = html;
+        }
+
+        function onStudentsLoaded(json) {
+            renderTable(json);
+        }
+
+        function onStudentLoaded(json) {
+            editStudentId = json.id;
+            document.getElementById('editMSSV').value = json.mssv || '';
+            document.getElementById('editLastName').value = json.lastName || '';
+            document.getElementById('editFirstName').value = json.firstName || '';
+            document.getElementById('editDateOfBirth').value = formatDate(json.dateOfBirth);
+            document.getElementById('editGender').value = json.gender || '';
+            document.getElementById('editPhone').value = json.phone || '';
+            document.getElementById('editAddress').value = json.address || '';
+            document.getElementById('editHometown').value = json.hometown || '';
+            document.getElementById('editEmail').value = json.email || '';
+            document.getElementById('editOverlay').classList.add('show');
+        }
+
+        function onOperationResult(success, message) {
+            document.getElementById('btnSaveEdit').textContent = '💾 Lưu thay đổi';
+            document.getElementById('btnSaveEdit').disabled = false;
+            if (success) {
+                showToast(message, 'success');
+                closeEdit();
+                loadStudents();
+            } else {
+                showToast(message, 'error');
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function escapeJs(str) {
+            if (!str) return '';
+            return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            return day + '/' + month + '/' + d.getFullYear();
+        }
+
+        window.addEventListener('load', function() {
+            loadStudents();
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'loaded' }));
+            } catch (e) { }
+        });
+    </script>
+</body>
+</html>

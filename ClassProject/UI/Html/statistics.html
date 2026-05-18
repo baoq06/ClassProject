@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống Kê - Quản Lý Sinh Viên</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            padding: 30px 20px;
+            margin: 0;
+        }
+        .page-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .page-container h2 {
+            color: #1a2a6c;
+            margin-bottom: 6px;
+            font-size: 22px;
+            border-bottom: 3px solid #1a2a6c;
+            padding-bottom: 10px;
+        }
+        .page-container .subtitle {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-left: 5px solid #ccc;
+        }
+        .stat-card.total { border-left-color: #3498db; }
+        .stat-card.male { border-left-color: #e67e22; }
+        .stat-card.female { border-left-color: #e84393; }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+        }
+        .stat-card.total .stat-icon {
+            background: rgba(52,152,219,0.12);
+            color: #3498db;
+        }
+        .stat-card.male .stat-icon {
+            background: rgba(230,126,34,0.12);
+            color: #e67e22;
+        }
+        .stat-card.female .stat-icon {
+            background: rgba(232,67,147,0.12);
+            color: #e84393;
+        }
+
+        .stat-info .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1;
+        }
+        .stat-info .stat-label {
+            color: #888;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 28px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+        .section h3 {
+            color: #1a2a6c;
+            font-size: 17px;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eef2f7;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .info-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid #eef2f7;
+        }
+        .info-item .info-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1.2;
+        }
+        .info-item .info-label {
+            color: #888;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .info-item.gender-ratio {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        .bar-container {
+            flex: 1;
+            max-width: 400px;
+        }
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .bar-label {
+            width: 36px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            text-align: right;
+        }
+        .bar-track {
+            flex: 1;
+            height: 22px;
+            background: #eef2f7;
+            border-radius: 11px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 11px;
+            transition: width 0.5s ease;
+        }
+        .bar-fill.nam { background: linear-gradient(135deg, #e67e22, #f39c12); }
+        .bar-fill.nu { background: linear-gradient(135deg, #e84393, #fd6bad); }
+        .bar-count {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            width: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table thead th {
+            background: #1a2a6c;
+            color: white;
+            padding: 11px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        table thead th:first-child { border-radius: 8px 0 0 0; }
+        table thead th:last-child { border-radius: 0 8px 0 0; }
+        table tbody td {
+            padding: 11px 14px;
+            border-bottom: 1px solid #eef2f7;
+            color: #444;
+        }
+        table tbody tr:hover {
+            background: #f8fafc;
+        }
+        table tbody tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+        table tbody tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge.gioi { background: #d4edda; color: #155724; }
+        .badge.kha { background: #d6eaf8; color: #1a5276; }
+        .badge.tb { background: #fff3cd; color: #856404; }
+        .badge.yeu { background: #f8d7da; color: #721c24; }
+
+        .no-data {
+            text-align: center;
+            color: #aaa;
+            padding: 40px 0;
+            font-size: 14px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; }
+        .toast.error { background: #e74c3c; }
+        .toast.success { background: #27ae60; }
+        .toast.warning { background: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <h2>THỐNG KÊ</h2>
+        <p class="subtitle">Tổng quan dữ liệu sinh viên và kết quả học tập</p>
+
+        <div class="stat-cards" id="statCards">
+            <div class="stat-card total">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <div class="stat-number" id="totalStudents">--</div>
+                    <div class="stat-label">Tổng sinh viên</div>
+                </div>
+            </div>
+            <div class="stat-card male">
+                <div class="stat-icon">👨</div>
+                <div class="stat-info">
+                    <div class="stat-number" id="maleStudents">--</div>
+                    <div class="stat-label">Nam</div>
+                </div>
+            </div>
+            <div class="stat-card female">
+                <div class="stat-icon">👩</div>
+                <div class="stat-info">
+                    <div class="stat-number" id="femaleStudents">--</div>
+                    <div class="stat-label">Nữ</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Thống kê sinh viên</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-value" id="infoTotal">--</div>
+                    <div class="info-label">Tổng số sinh viên</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-value" id="infoMale">--</div>
+                    <div class="info-label">Sinh viên Nam</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-value" id="infoFemale">--</div>
+                    <div class="info-label">Sinh viên Nữ</div>
+                </div>
+                <div class="info-item gender-ratio">
+                    <div class="bar-container">
+                        <div class="bar-row">
+                            <span class="bar-label">Nam</span>
+                            <div class="bar-track">
+                                <div class="bar-fill nam" id="barNam" style="width: 0%"></div>
+                            </div>
+                            <span class="bar-count" id="barNamCount">0</span>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label">Nữ</span>
+                            <div class="bar-track">
+                                <div class="bar-fill nu" id="barNu" style="width: 0%"></div>
+                            </div>
+                            <span class="bar-count" id="barNuCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Thống kê điểm</h3>
+            <div id="scoreSection">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:50px">STT</th>
+                            <th>MSSV</th>
+                            <th>Họ và tên</th>
+                            <th style="width:80px">ĐTB</th>
+                            <th style="width:100px">Xếp loại</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoreTableBody">
+                        <tr>
+                            <td colspan="5" class="no-data">Chưa có dữ liệu điểm</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => { toast.className = 'toast ' + type; }, 3000);
+        }
+
+        function loadStatistics() {
+            try {
+                chrome.webview.postMessage(JSON.stringify({ action: 'loadStatistics' }));
+            } catch (e) {
+                showToast('Lỗi kết nối: ' + e.message, 'error');
+            }
+        }
+
+        function classifyScore(dtb) {
+            if (dtb >= 8) return { label: 'Giỏi', cls: 'gioi' };
+            if (dtb >= 6.5) return { label: 'Khá', cls: 'kha' };
+            if (dtb >= 5) return { label: 'TB', cls: 'tb' };
+            return { label: 'Yếu', cls: 'yeu' };
+        }
+
+        function onStatisticsLoaded(json) {
+            let data;
+            if (typeof json === 'string') {
+                try { data = JSON.parse(json); } catch (e) {
+                    showToast('Dữ liệu thống kê không hợp lệ', 'error');
+                    return;
+                }
+            } else {
+                data = json;
+            }
+
+            const total = data.totalStudents || 0;
+            const male = data.maleStudents || 0;
+            const female = data.femaleStudents || 0;
+
+            document.getElementById('totalStudents').textContent = total;
+            document.getElementById('maleStudents').textContent = male;
+            document.getElementById('femaleStudents').textContent = female;
+
+            document.getElementById('infoTotal').textContent = total;
+            document.getElementById('infoMale').textContent = male;
+            document.getElementById('infoFemale').textContent = female;
+
+            document.getElementById('barNamCount').textContent = male;
+            document.getElementById('barNuCount').textContent = female;
+            if (total > 0) {
+                document.getElementById('barNam').style.width = ((male / total) * 100).toFixed(1) + '%';
+                document.getElementById('barNu').style.width = ((female / total) * 100).toFixed(1) + '%';
+            } else {
+                document.getElementById('barNam').style.width = '0%';
+                document.getElementById('barNu').style.width = '0%';
+            }
+
+            const scoreSummary = data.scoreSummary || [];
+            const tbody = document.getElementById('scoreTableBody');
+
+            if (scoreSummary.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="no-data">Chưa có dữ liệu điểm</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = scoreSummary.map((s, i) => {
+                const rank = classifyScore(s.dtb);
+                return '<tr>' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td>' + (s.mssv || '--') + '</td>' +
+                    '<td>' + (s.tenSV || '--') + '</td>' +
+                    '<td><strong>' + (s.dtb != null ? s.dtb.toFixed(2) : '--') + '</strong></td>' +
+                    '<td><span class="badge ' + rank.cls + '">' + rank.label + '</span></td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        window.addEventListener('load', function() {
+            loadStatistics();
+        });
+    </script>
+</body>
+</html>
