@@ -28,7 +28,7 @@ namespace ClassProject.Presentation.Forms
                 return;
             }
 
-            Users user = new Users();
+            UserRepository user = new UserRepository();
             if (!user.EmailExists(email))
             {
                 MessageBox.Show("Email không tồn tại trong hệ thống!", "Warning",
@@ -76,7 +76,7 @@ namespace ClassProject.Presentation.Forms
 
             try
             {
-                Users user = new Users();
+                UserRepository user = new UserRepository();
                 string hashed = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
                 if (user.ResetPassword(_verifiedEmail, hashed))

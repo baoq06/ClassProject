@@ -25,7 +25,7 @@ namespace ClassProject
 
             try
             {
-                Users user = new Users();
+                UserRepository user = new UserRepository();
                 DataTable dt = user.GetByUsername(username);
 
                 string? hashedPassword = null;
