@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 //using ClassProject.DataAccess.Repositories;
 
-<<<<<<<< Updated upstream:ClassProject/_services/UserService.cs
-namespace ClassProject.Utils
-========
 namespace ClassProject.Services
->>>>>>>> Stashed changes:ClassProject/Services/UserService.cs
 {
-    public static class UserService
+    internal class UserService
     {
         //private UserRepository repo = new UserRepository();
 
