@@ -129,20 +129,7 @@ namespace ClassProject
             lblForgetPassword.Text = "Forget password?";
             lblForgetPassword.Click += lblForgetPassword_Click;
             // 
-            // lblRegister
-            // 
-            lblRegister.AutoSize = true;
-            lblRegister.BackColor = Color.Transparent;
-            lblRegister.Cursor = Cursors.Hand;
-            lblRegister.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-            lblRegister.ForeColor = Color.LightBlue;
-            lblRegister.Location = new Point(340, 708);
-            lblRegister.Margin = new Padding(6, 0, 6, 0);
-            lblRegister.Name = "lblRegister";
-            lblRegister.Size = new Size(484, 45);
-            lblRegister.TabIndex = 9;
-            lblRegister.Text = "Don't have an account? Sign up.";
-            lblRegister.Click += lblRegister_Click;
+           
             // 
             // chkRememberMe
             // 
