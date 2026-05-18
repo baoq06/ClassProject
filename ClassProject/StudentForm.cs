@@ -8,12 +8,12 @@ using System.Windows.Forms;
 
 namespace ClassProject
 {
-    public partial class AddStudentForm : Form
+    public partial class StudentForm : Form
     {
         byte[] studentImage = null;
         private int currentUserId;
 
-        public AddStudentForm(int userId)
+        public StudentForm(int userId)
         {
             InitializeComponent();
             currentUserId = userId;
@@ -169,5 +169,32 @@ namespace ClassProject
         {
             return Regex.IsMatch(phone, @"^[0-9]{10}$");
         }
+
+        private void btnViewGrades_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ViewGradesForm f = new ViewGradesForm(currentUserId);
+                f.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi mở bảng điểm: " + ex.Message);
+            }
+        }
+
+        private void btnRegisterCourse_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                CourseRegistrationForm f = new CourseRegistrationForm(currentUserId);
+                f.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi mở form đăng ký môn: " + ex.Message);
+            }
+        }
+
     }
 }

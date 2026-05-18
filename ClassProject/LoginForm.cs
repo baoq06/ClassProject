@@ -68,7 +68,7 @@ namespace ClassProject
                     else
                     {
                         MessageBox.Show("Đăng nhập thành công!");
-                        AddStudentForm f = new AddStudentForm(userId);
+                        StudentForm f = new StudentForm(userId);
                         f.Show();
                         this.Hide();
                     }

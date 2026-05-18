@@ -37,6 +37,15 @@ namespace ClassProject
             SetActiveButton(btnAddStudent);
         }
 
+        /// <summary>
+        /// Mở trang quản lý điểm cho admin.
+        /// </summary>
+        private void btnGrades_Click(object sender, EventArgs e)
+        {
+            ShowUserControl(new UC_ManageGrades());
+            SetActiveButton(btnGrades);
+        }
+
         private void btnLogout_Click(object sender, EventArgs e)
         {
             LoginForm login = new LoginForm();

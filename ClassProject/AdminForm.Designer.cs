@@ -18,46 +18,52 @@
             btnApprove = new Button();
             btnView = new Button();
             btnAddStudent = new Button();
+            btnGrades = new Button();
             btnLogout = new Button();
             panelMain = new Panel();
             panelSidebar.SuspendLayout();
             SuspendLayout();
-            // 
+            //
             // panelSidebar
-            // 
+            //
             panelSidebar.BackColor = Color.FromArgb(44, 62, 80);
             panelSidebar.Controls.Add(lblAdmin);
             panelSidebar.Controls.Add(btnLogout);
             panelSidebar.Dock = DockStyle.Left;
             panelSidebar.Width = 200;
             panelSidebar.Name = "panelSidebar";
-            // 
+            //
             // lblAdmin
-            // 
+            //
             lblAdmin.Dock = DockStyle.Top;
             lblAdmin.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblAdmin.ForeColor = Color.White;
             lblAdmin.Height = 56;
             lblAdmin.Text = "ADMIN";
             lblAdmin.TextAlign = ContentAlignment.MiddleCenter;
-            // 
+            //
             // btnApprove
-            // 
+            //
             ConfigureSidebarButton(btnApprove, "Approve", 64);
             btnApprove.Click += btnApprove_Click;
-            // 
+            //
             // btnView
-            // 
+            //
             ConfigureSidebarButton(btnView, "View", 120);
             btnView.Click += btnView_Click;
-            // 
+            //
             // btnAddStudent
-            // 
+            //
             ConfigureSidebarButton(btnAddStudent, "Add Student", 176);
             btnAddStudent.Click += btnAddStudent_Click;
-            // 
+            //
+            // btnGrades
+            //
+            ConfigureSidebarButton(btnGrades, "Chỉnh sửa điểm", 232);
+            btnGrades.Click += btnGrades_Click;
+            //
             // btnLogout
-            // 
+            //
             btnLogout.Dock = DockStyle.Bottom;
             btnLogout.BackColor = Color.FromArgb(192, 57, 43);
             btnLogout.FlatStyle = FlatStyle.Flat;
@@ -68,15 +74,15 @@
             btnLogout.Text = "Đăng xuất";
             btnLogout.UseVisualStyleBackColor = false;
             btnLogout.Click += btnLogout_Click;
-            // 
+            //
             // panelMain
-            // 
+            //
             panelMain.BackColor = Color.White;
             panelMain.Dock = DockStyle.Fill;
             panelMain.Name = "panelMain";
-            // 
+            //
             // AdminForm
-            // 
+            //
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
@@ -113,6 +119,7 @@
         private Button btnApprove;
         private Button btnView;
         private Button btnAddStudent;
+        private Button btnGrades;
         private Button btnLogout;
     }
 }
