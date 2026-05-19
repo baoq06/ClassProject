@@ -48,6 +48,10 @@ namespace ClassProject
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
+            // Xóa session trước khi mở lại LoginForm để tránh trường hợp
+            // user khác login mà vẫn thấy Globals của user cũ.
+            Globals.ClearSession();
+
             LoginForm login = new LoginForm();
             login.Show();
             Close();

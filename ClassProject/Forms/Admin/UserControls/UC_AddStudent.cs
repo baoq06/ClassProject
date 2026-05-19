@@ -16,6 +16,11 @@ namespace ClassProject
         public UC_AddStudent()
         {
             InitializeComponent();
+
+            // Đặt ngày sinh mặc định ~20 tuổi.
+            // Để ở constructor (KHÔNG để trong InitializeComponent) để
+            // WinForms Designer parse được file Designer.cs.
+            dtpDateOfBirth.Value = DateTime.Now.AddYears(-20);
         }
 
         private void btnChooseImage_Click(object sender, EventArgs e)

@@ -98,6 +98,8 @@ namespace ClassProject
 
             Controls.Add(picStudent);
             Controls.Add(btnChooseImage);
+            Controls.Add(btnCancel);
+            Controls.Add(btnSave);
             Load += AdminEditStudentForm_Load;
 
             ((System.ComponentModel.ISupportInitialize)picStudent).EndInit();

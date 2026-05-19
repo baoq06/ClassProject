@@ -208,6 +208,8 @@ namespace ClassProject
 
             if (dgvPending.Columns.Contains("PendingId"))
                 dgvPending.Columns["PendingId"].Visible = false;
+
+            lblPendingCount.Text = $"Số học sinh đang chờ duyệt: {dt.Rows.Count}";
         }
     }
 }

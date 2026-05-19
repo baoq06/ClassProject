@@ -17,6 +17,12 @@ namespace ClassProject
         {
             InitializeComponent();
             currentUserId = userId;
+
+            this.FormClosed += (s, e) =>
+            {
+                Globals.ClearSession();
+                new LoginForm().Show();
+            };
         }
 
         private void AddStudentForm_Load(object sender, EventArgs e)

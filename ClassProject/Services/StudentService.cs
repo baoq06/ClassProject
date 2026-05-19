@@ -42,7 +42,7 @@ namespace ClassProject.Services
                             }
                         }
 
-                        newUserId = Users.CreateUser(
+                        newUserId = UserRepository.CreateUser(
                             mssv,
                             email,
                             BCrypt.Net.BCrypt.HashPassword(mssv),
@@ -138,7 +138,7 @@ WHERE Id = @PendingId";
                             ? $"{student.Mssv}@student.local"
                             : student.Email.Trim();
 
-                        int userId = Users.CreateUser(
+                        int userId = UserRepository.CreateUser(
                             student.Mssv,
                             accountEmail,
                             BCrypt.Net.BCrypt.HashPassword(student.Mssv),
