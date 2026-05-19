@@ -10,6 +10,7 @@ namespace ClassProject
         public UC_ViewStudents()
         {
             InitializeComponent();
+            EmailMasker.AttachTo(dgvStudents, "Email");
         }
 
         protected override void OnLoad(EventArgs e)

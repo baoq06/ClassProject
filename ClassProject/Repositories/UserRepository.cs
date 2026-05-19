@@ -200,5 +200,73 @@ VALUES (@Username, @Email, @Password, @RoleId);";
                 return Convert.ToInt32(cmd.ExecuteScalar());
             }
         }
+
+        public static bool GetMustChangePassword(int userId)
+        {
+            My_DB db = new My_DB();
+
+            using (SqlConnection conn = db.GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+
+                    const string sql = "SELECT MustChangePassword FROM dbo.Users WHERE Id = @Id;";
+
+                    using (SqlCommand cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = userId });
+                        object result = cmd.ExecuteScalar();
+                        if (result == null || result == DBNull.Value) return false;
+                        return Convert.ToBoolean(result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi đọc trạng thái đổi mật khẩu: " + ex.Message);
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Đổi mật khẩu cho user theo Id và clear cờ MustChangePassword.
+        /// Chú ý: hashedPassword phải là chuỗi đã BCrypt.HashPassword,
+        /// KHÔNG truyền plain text.
+        /// </summary>
+        public static bool ChangePassword(int userId, string hashedPassword)
+        {
+            if (string.IsNullOrWhiteSpace(hashedPassword))
+                throw new ArgumentException("Hashed password không được rỗng.", nameof(hashedPassword));
+
+            My_DB db = new My_DB();
+
+            using (SqlConnection conn = db.GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+
+                    const string sql = @"
+UPDATE dbo.Users
+SET Password = @Password,
+    MustChangePassword = 0
+WHERE Id = @Id;";
+
+                    using (SqlCommand cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@Password", SqlDbType.NVarChar) { Value = hashedPassword });
+                        cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = userId });
+                        return cmd.ExecuteNonQuery() > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi đổi mật khẩu: " + ex.Message);
+                    return false;
+                }
+            }
+        }
     }
 }
+   
