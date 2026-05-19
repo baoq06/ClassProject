@@ -21,9 +21,12 @@ namespace ClassProject
             btnApprove = new Button();
             btnReject = new Button();
             btnRefresh = new Button();
+            panelStatus = new Panel();
+            lblPendingCount = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvPending).BeginInit();
             panelTop.SuspendLayout();
             flowButtons.SuspendLayout();
+            panelStatus.SuspendLayout();
             SuspendLayout();
             // 
             // panelTop
@@ -118,12 +121,32 @@ namespace ClassProject
             dgvPending.ReadOnly = true;
             dgvPending.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             // 
+            // panelStatus
+            // 
+            panelStatus.BackColor = Color.FromArgb(236, 240, 241);
+            panelStatus.BorderStyle = BorderStyle.FixedSingle;
+            panelStatus.Controls.Add(lblPendingCount);
+            panelStatus.Dock = DockStyle.Bottom;
+            panelStatus.Height = 32;
+            panelStatus.Padding = new Padding(8, 0, 12, 0);
+            // 
+            // lblPendingCount
+            // 
+            lblPendingCount.Dock = DockStyle.Right;
+            lblPendingCount.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+            lblPendingCount.ForeColor = Color.FromArgb(52, 73, 94);
+            lblPendingCount.AutoSize = false;
+            lblPendingCount.Size = new Size(280, 30);
+            lblPendingCount.Text = "Số học sinh đang chờ duyệt: 0";
+            lblPendingCount.TextAlign = ContentAlignment.MiddleRight;
+            // 
             // UC_Approve
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             Controls.Add(dgvPending);
+            Controls.Add(panelStatus);
             Controls.Add(panelTop);
             Name = "UC_Approve";
             Size = new Size(1000, 600);
@@ -131,6 +154,7 @@ namespace ClassProject
             panelTop.ResumeLayout(false);
             flowButtons.ResumeLayout(false);
             flowButtons.PerformLayout();
+            panelStatus.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -142,5 +166,7 @@ namespace ClassProject
         private Button btnApprove;
         private Button btnReject;
         private Button btnRefresh;
+        private Panel panelStatus;
+        private Label lblPendingCount;
     }
 }

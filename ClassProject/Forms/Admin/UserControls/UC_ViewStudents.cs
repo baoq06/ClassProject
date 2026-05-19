@@ -22,18 +22,22 @@ namespace ClassProject
         private void LoadStudents()
         {
             StudentRepository repo = new StudentRepository();
-            dgvStudents.DataSource = repo.GetAll();
+            DataTable dt = repo.GetAll();
+            dgvStudents.DataSource = dt;
             ConfigureGrid();
+            lblStudentCount.Text = $"Tổng số sinh viên: {dt.Rows.Count}"; // ← thêm
         }
 
         private void SearchStudents()
         {
             StudentRepository repo = new StudentRepository();
             string keyword = txtSearch.Text.Trim();
-            dgvStudents.DataSource = string.IsNullOrEmpty(keyword)
+            DataTable dt = string.IsNullOrEmpty(keyword)
                 ? repo.GetAll()
                 : repo.Search(keyword);
+            dgvStudents.DataSource = dt;
             ConfigureGrid();
+            lblStudentCount.Text = $"Tổng số sinh viên: {dt.Rows.Count}"; // ← thêm
         }
 
         private void ConfigureGrid()

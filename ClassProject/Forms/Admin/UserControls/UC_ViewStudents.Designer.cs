@@ -22,9 +22,12 @@ namespace ClassProject
             btnEdit = new Button();
             btnDelete = new Button();
             dgvStudents = new DataGridView();
+            panelStatus = new Panel();
+            lblStudentCount = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvStudents).BeginInit();
             panelTop.SuspendLayout();
             flowToolbar.SuspendLayout();
+            panelStatus.SuspendLayout();
             SuspendLayout();
             // 
             // panelTop
@@ -129,12 +132,32 @@ namespace ClassProject
             dgvStudents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvStudents.CellDoubleClick += dgvStudents_CellDoubleClick;
             // 
+            // panelStatus
+            // 
+            panelStatus.BackColor = Color.FromArgb(236, 240, 241);
+            panelStatus.BorderStyle = BorderStyle.FixedSingle;
+            panelStatus.Controls.Add(lblStudentCount);
+            panelStatus.Dock = DockStyle.Bottom;
+            panelStatus.Height = 32;
+            panelStatus.Padding = new Padding(8, 0, 12, 0);
+            // 
+            // lblStudentCount
+            // 
+            lblStudentCount.Dock = DockStyle.Right;
+            lblStudentCount.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+            lblStudentCount.ForeColor = Color.FromArgb(52, 73, 94);
+            lblStudentCount.AutoSize = false;
+            lblStudentCount.Size = new Size(220, 30);
+            lblStudentCount.Text = "Tổng số sinh viên: 0";
+            lblStudentCount.TextAlign = ContentAlignment.MiddleRight;
+            // 
             // UC_ViewStudents
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             Controls.Add(dgvStudents);
+            Controls.Add(panelStatus);
             Controls.Add(panelTop);
             Name = "UC_ViewStudents";
             Size = new Size(1000, 600);
@@ -142,6 +165,7 @@ namespace ClassProject
             panelTop.ResumeLayout(false);
             flowToolbar.ResumeLayout(false);
             flowToolbar.PerformLayout();
+            panelStatus.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -154,5 +178,7 @@ namespace ClassProject
         private Button btnEdit;
         private Button btnDelete;
         private DataGridView dgvStudents;
+        private Panel panelStatus;
+        private Label lblStudentCount;
     }
 }
