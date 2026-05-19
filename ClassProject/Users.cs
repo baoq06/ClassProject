@@ -194,7 +194,7 @@ WHERE Id = @Id;";
             }
         }
 
-        /// <summary>Lấy Id, Password, RoleId theo Username (đăng nhập).</summary>
+        /// <summary>Lấy Id, Password, RoleId, MustChangePassword theo Username (đăng nhập).</summary>
         public DataTable GetByUsername(string username)
         {
             DataTable dt = new DataTable();
@@ -206,8 +206,9 @@ WHERE Id = @Id;";
                 {
                     conn.Open();
 
+                    // Trả thêm cột MustChangePassword cho LoginForm
                     const string sql = @"
-SELECT Id, Password, RoleId
+SELECT Id, Username, Email, Password, RoleId, MustChangePassword
 FROM dbo.Users
 WHERE Username = @Username;";
 
@@ -266,7 +267,13 @@ WHERE Username = @Username;";
                 {
                     conn.Open();
 
-                    const string sql = "UPDATE dbo.Users SET Password = @Password WHERE Email = @Email";
+                    // Khi user đặt lại password qua "Forget password" cũng coi như đã đổi
+                    // -> set MustChangePassword = 0 để không hỏi đổi lần nữa.
+                    const string sql = @"
+UPDATE dbo.Users
+SET Password = @Password,
+    MustChangePassword = 0
+WHERE Email = @Email;";
 
                     using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
@@ -283,14 +290,18 @@ WHERE Username = @Username;";
             }
         }
 
-        /// <summary>Tạo user mới trong transaction (duyệt sinh viên).</summary>
+        /// <summary>
+        /// Tạo user mới trong transaction (duyệt sinh viên).
+        /// Tài khoản RoleId = 1 (Student) sẽ được set MustChangePassword = 1
+        /// để sinh viên BẮT BUỘC đổi mật khẩu lần đăng nhập đầu tiên.
+        /// </summary>
         public static int CreateUser(string username, string email, string hashedPassword, int roleId,
                                      SqlConnection conn, SqlTransaction tx)
         {
             const string sql = @"
-INSERT INTO dbo.Users (Username, Email, Password, RoleId)
+INSERT INTO dbo.Users (Username, Email, Password, RoleId, MustChangePassword)
 OUTPUT INSERTED.Id
-VALUES (@Username, @Email, @Password, @RoleId);";
+VALUES (@Username, @Email, @Password, @RoleId, @MustChangePassword);";
 
             using (SqlCommand cmd = new SqlCommand(sql, conn, tx))
             {
@@ -299,7 +310,86 @@ VALUES (@Username, @Email, @Password, @RoleId);";
                 cmd.Parameters.Add(new SqlParameter("@Password", SqlDbType.NVarChar) { Value = hashedPassword });
                 cmd.Parameters.Add(new SqlParameter("@RoleId", SqlDbType.Int) { Value = roleId });
 
+                // Chỉ tài khoản Student (RoleId = 1) bị ép đổi mật khẩu lần đầu
+                cmd.Parameters.Add(new SqlParameter("@MustChangePassword", SqlDbType.Bit)
+                {
+                    Value = roleId == 1 ? 1 : 0
+                });
+
                 return Convert.ToInt32(cmd.ExecuteScalar());
+            }
+        }
+
+        // ==================== ĐỔI MẬT KHẨU (FORCE FIRST-TIME) ====================
+
+        /// <summary>
+        /// Lấy cờ MustChangePassword của user theo Id.
+        /// Trả về false nếu user không tồn tại hoặc lỗi.
+        /// </summary>
+        public static bool GetMustChangePassword(int userId)
+        {
+            My_DB db = new My_DB();
+
+            using (SqlConnection conn = db.GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+
+                    const string sql = "SELECT MustChangePassword FROM dbo.Users WHERE Id = @Id;";
+
+                    using (SqlCommand cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = userId });
+                        object result = cmd.ExecuteScalar();
+                        if (result == null || result == DBNull.Value) return false;
+                        return Convert.ToBoolean(result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi đọc trạng thái đổi mật khẩu: " + ex.Message);
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Đổi mật khẩu cho user theo Id và clear cờ MustChangePassword.
+        /// Chú ý: hashedPassword phải là chuỗi đã BCrypt.HashPassword,
+        /// KHÔNG truyền plain text.
+        /// </summary>
+        public static bool ChangePassword(int userId, string hashedPassword)
+        {
+            if (string.IsNullOrWhiteSpace(hashedPassword))
+                throw new ArgumentException("Hashed password không được rỗng.", nameof(hashedPassword));
+
+            My_DB db = new My_DB();
+
+            using (SqlConnection conn = db.GetConnection())
+            {
+                try
+                {
+                    conn.Open();
+
+                    const string sql = @"
+UPDATE dbo.Users
+SET Password = @Password,
+    MustChangePassword = 0
+WHERE Id = @Id;";
+
+                    using (SqlCommand cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.Add(new SqlParameter("@Password", SqlDbType.NVarChar) { Value = hashedPassword });
+                        cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = userId });
+                        return cmd.ExecuteNonQuery() > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi đổi mật khẩu: " + ex.Message);
+                    return false;
+                }
             }
         }
     }

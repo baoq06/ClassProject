@@ -10,6 +10,11 @@ namespace ClassProject
         public UC_ViewStudents()
         {
             InitializeComponent();
+
+            // Bật mask cột Email cho admin views.
+            // Underlying value vẫn là full email -> repo / SQL / edit form
+            // không bị ảnh hưởng; chỉ thay đổi giá trị render trên UI.
+            EmailMasker.AttachTo(dgvStudents, "Email");
         }
 
         protected override void OnLoad(EventArgs e)

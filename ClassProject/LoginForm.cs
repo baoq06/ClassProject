@@ -31,6 +31,7 @@ namespace ClassProject
                 string? hashedPassword = null;
                 int userId = 0;
                 int roleId = -1;
+                bool mustChangePassword = false;
 
                 if (dt.Rows.Count > 0)
                 {
@@ -38,6 +39,15 @@ namespace ClassProject
                     hashedPassword = row["Password"].ToString();
                     userId = Convert.ToInt32(row["Id"]);
                     roleId = Convert.ToInt32(row["RoleId"]);
+
+                    // Cột MustChangePassword chỉ có sau khi đã chạy migration
+                    // 005_must_change_password.sql. Dùng Contains để an toàn nếu
+                    // bản DB chưa migrate (sẽ coi như false).
+                    if (dt.Columns.Contains("MustChangePassword")
+                        && row["MustChangePassword"] != DBNull.Value)
+                    {
+                        mustChangePassword = Convert.ToBoolean(row["MustChangePassword"]);
+                    }
                 }
 
                 if (hashedPassword != null && BCrypt.Net.BCrypt.Verify(password, hashedPassword))
@@ -55,6 +65,52 @@ namespace ClassProject
                         Properties.Settings.Default.RememberMe = false;
                     }
                     Properties.Settings.Default.Save();
+
+                    // ----- ÉP ĐỔI MẬT KHẨU LẦN ĐẦU (chỉ áp cho Student) -----
+                    // Sinh viên đăng nhập bằng tài khoản admin cấp (password = MSSV)
+                    // sẽ có flag MustChangePassword = 1. Bắt buộc đổi trước khi vào hệ thống.
+                    if (mustChangePassword && roleId == 1)
+                    {
+                        using (var cp = new ChangePasswordForm(userId, username))
+                        {
+                            var result = cp.ShowDialog(this);
+                            if (result != DialogResult.OK)
+                            {
+                                // User hủy hoặc đóng form -> KHÔNG cho vào hệ thống,
+                                // ở lại login để họ có cơ hội thử lại.
+                                MessageBox.Show(
+                                    "Bạn cần đổi mật khẩu để có thể đăng nhập.",
+                                    "Thông báo",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information);
+
+                                txtPassword.Clear();
+                                txtPassword.Focus();
+                                return;
+                            }
+
+                            // Đổi password thành công -> Properties.Settings.Password
+                            // (nếu RememberMe) bị stale. Xóa luôn để lần sau user phải nhập lại.
+                            if (Properties.Settings.Default.RememberMe)
+                            {
+                                Properties.Settings.Default.Password = "";
+                                Properties.Settings.Default.Save();
+                            }
+                        }
+                    }
+                    // ----- HẾT phần đổi mật khẩu -----
+
+                    // ----- LƯU PHIÊN ĐĂNG NHẬP VÀO Globals -----
+                    // Email đã có sẵn trong DataTable dt từ GetByUsername (đã bổ sung
+                    // cột Email ở bước 1). Đọc thẳng từ row đầu tiên.
+                    string email = "";
+                    if (dt.Rows.Count > 0 && dt.Columns.Contains("Email")
+                        && dt.Rows[0]["Email"] != DBNull.Value)
+                    {
+                        email = dt.Rows[0]["Email"].ToString() ?? "";
+                    }
+                    Globals.SetSession(userId, username, roleId, email);
+                    // ----- HẾT phần Globals -----
 
                     if (roleId == 0)
                     {
